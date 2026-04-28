@@ -1,0 +1,147 @@
+{
+  "program": "windows-11-25h2-live-wallpaper-phase2",
+  "version": "2.0.0",
+  "execution_policy": {
+    "branch_prefix": "cursor/",
+    "branch_suffix": "-2e4d",
+    "commit_per_ticket": true,
+    "require_pr_per_branch": true,
+    "default_base_branch": "main"
+  },
+  "batches": [
+    {
+      "id": "batch-0-data-stabilization",
+      "description": "Stabilize 4-state data pipeline and produce deterministic assets",
+      "parallel_agents": [
+        "P2-A1",
+        "P2-A2"
+      ],
+      "tickets": [
+        "P2-DATA-001",
+        "P2-DATA-002",
+        "P2-DATA-003",
+        "P2-DATA-004"
+      ],
+      "gate": {
+        "name": "P2-G0-data-ready",
+        "required_tickets_done": [
+          "P2-DATA-001",
+          "P2-DATA-002",
+          "P2-DATA-003",
+          "P2-DATA-004"
+        ]
+      }
+    },
+    {
+      "id": "batch-1-app-bootstrap",
+      "description": "Create real Win32 app entrypoint and runtime bootstrap graph",
+      "depends_on_gate": "P2-G0-data-ready",
+      "parallel_agents": [
+        "P2-A3",
+        "P2-A4"
+      ],
+      "tickets": [
+        "P2-APP-101",
+        "P2-APP-102",
+        "P2-APP-103",
+        "P2-APP-104"
+      ],
+      "gate": {
+        "name": "P2-G1-app-launches",
+        "required_tickets_done": [
+          "P2-APP-101",
+          "P2-APP-102",
+          "P2-APP-103",
+          "P2-APP-104"
+        ]
+      }
+    },
+    {
+      "id": "batch-2-desktop-render-integration",
+      "description": "Wire desktop host + render runtime and show first watchable frame",
+      "depends_on_gate": "P2-G1-app-launches",
+      "parallel_agents": [
+        "P2-A5",
+        "P2-A6",
+        "P2-A7"
+      ],
+      "tickets": [
+        "P2-RENDER-201",
+        "P2-RENDER-202",
+        "P2-RENDER-203",
+        "P2-RENDER-204",
+        "P2-HOST-205"
+      ],
+      "gate": {
+        "name": "P2-G2-first-watchable-desktop-frame",
+        "required_tickets_done": [
+          "P2-RENDER-201",
+          "P2-RENDER-202",
+          "P2-RENDER-203",
+          "P2-RENDER-204",
+          "P2-HOST-205"
+        ]
+      }
+    },
+    {
+      "id": "batch-3-controls-and-overlay",
+      "description": "Wire camera input, IPC controls, and live overlay updates",
+      "depends_on_gate": "P2-G2-first-watchable-desktop-frame",
+      "parallel_agents": [
+        "P2-A8",
+        "P2-A9"
+      ],
+      "tickets": [
+        "P2-CTRL-301",
+        "P2-CTRL-302",
+        "P2-OVL-303",
+        "P2-OVL-304"
+      ],
+      "gate": {
+        "name": "P2-G3-interactive-demo",
+        "required_tickets_done": [
+          "P2-CTRL-301",
+          "P2-CTRL-302",
+          "P2-OVL-303",
+          "P2-OVL-304"
+        ]
+      }
+    },
+    {
+      "id": "batch-4-demo-hardening-and-runbook",
+      "description": "Add deterministic demo runbook, smoke tests, and evidence bundle",
+      "depends_on_gate": "P2-G3-interactive-demo",
+      "parallel_agents": [
+        "P2-A10",
+        "P2-A11"
+      ],
+      "tickets": [
+        "P2-DEMO-401",
+        "P2-DEMO-402",
+        "P2-DEMO-403",
+        "P2-DEMO-404"
+      ],
+      "gate": {
+        "name": "P2-G4-watchable-demo-ready",
+        "required_tickets_done": [
+          "P2-DEMO-401",
+          "P2-DEMO-402",
+          "P2-DEMO-403",
+          "P2-DEMO-404"
+        ]
+      }
+    }
+  ],
+  "launch_templates": [
+    {
+      "name": "phase2-implementation-agent-launch",
+      "model": "composer-2-fast",
+      "instructions": "Implement only assigned tickets. Run relevant tests. Commit and push before and after test fixes."
+    },
+    {
+      "name": "phase2-validation-agent-launch",
+      "model": "composer-2-fast",
+      "instructions": "Run smoke/perf checks, produce evidence artifacts, and block on deterministic demo failures."
+    }
+  ]
+}
