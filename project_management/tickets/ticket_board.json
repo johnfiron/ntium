@@ -1,0 +1,489 @@
+{
+  "project": "windows-11-25h2-live-wallpaper",
+  "version": "1.0.0",
+  "generated_by": "cloud-agent",
+  "columns": [
+    "id",
+    "title",
+    "epic",
+    "owner",
+    "status",
+    "priority",
+    "dependencies",
+    "acceptance_criteria",
+    "test_cases",
+    "risk_tag"
+  ],
+  "tickets": [
+    {
+      "id": "C0-001",
+      "title": "Event snapshot binary contract v1",
+      "epic": "Contracts",
+      "owner": "A0+A4+A5",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [],
+      "acceptance_criteria": "docs/contracts/event_snapshot_v1.md defines header fields, record types, CRC rules, FULL_STATE/DELTA semantics, versioning, and max bounds",
+      "test_cases": "Parser accepts valid v1 sample; rejects malformed lengths, bad crc, unsupported major; delta base_sequence mismatch handled",
+      "risk_tag": "schema_drift"
+    },
+    {
+      "id": "C0-002",
+      "title": "Named pipe wire protocol contract v1",
+      "epic": "Contracts",
+      "owner": "A0+A6+A7",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [],
+      "acceptance_criteria": "docs/contracts/ipc_pipe_v1.md defines frame header, message types, command payloads, ACK/ERROR semantics, limits",
+      "test_cases": "Protocol vectors for valid/invalid frames, crc mismatch, oversize payload, unknown msg type",
+      "risk_tag": "interop"
+    },
+    {
+      "id": "C0-003",
+      "title": "Render invalidation API contract",
+      "epic": "Contracts",
+      "owner": "A0+A2+A4",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [],
+      "acceptance_criteria": "Interface for dirty rect handoff and threading ownership frozen in docs/contracts/render_invalidation_api.md",
+      "test_cases": "Contract examples cover single/multi-monitor and full-frame fallback",
+      "risk_tag": "integration"
+    },
+    {
+      "id": "H1-101",
+      "title": "DefView-relative desktop attach controller",
+      "epic": "DesktopHost",
+      "owner": "A1",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "C0-003"
+      ],
+      "acceptance_criteria": "Host window attaches relative to SHELLDLL_DefView parent without WorkerW assumptions and survives explorer restarts",
+      "test_cases": "Cold start, explorer restart, missing DefView retry path",
+      "risk_tag": "shell_variance"
+    },
+    {
+      "id": "H1-102",
+      "title": "Desktop icon visibility manager with ownership token",
+      "epic": "DesktopHost",
+      "owner": "A1",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "H1-101"
+      ],
+      "acceptance_criteria": "Hide/restore logic tracks ownership and restores safely on shutdown/crash recovery rules",
+      "test_cases": "Icons hidden before app start, app-owned hide then crash, app-owned hide then graceful exit",
+      "risk_tag": "user_state"
+    },
+    {
+      "id": "H1-103",
+      "title": "Shell/session/display event router",
+      "epic": "DesktopHost",
+      "owner": "A1",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "H1-101"
+      ],
+      "acceptance_criteria": "TaskbarCreated, WM_DISPLAYCHANGE, WTS session, and power events trigger deterministic rebind/resume behavior",
+      "test_cases": "Lock/unlock, logoff/logon, display change, suspend/resume",
+      "risk_tag": "lifecycle"
+    },
+    {
+      "id": "R1-201",
+      "title": "Per-adapter D3D11 device manager",
+      "epic": "RenderCore",
+      "owner": "A2",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "C0-003"
+      ],
+      "acceptance_criteria": "Creates/reuses devices by adapter LUID with debug toggle and deterministic teardown",
+      "test_cases": "Single adapter and mixed adapter boot path",
+      "risk_tag": "gpu_init"
+    },
+    {
+      "id": "R1-202",
+      "title": "Per-monitor flip-model swapchain manager",
+      "epic": "RenderCore",
+      "owner": "A2",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "R1-201",
+        "M1-601"
+      ],
+      "acceptance_criteria": "Swapchains created/resized per monitor with proper format and frame latency settings",
+      "test_cases": "Monitor add/remove, orientation change, DPI change",
+      "risk_tag": "swapchain"
+    },
+    {
+      "id": "R1-203",
+      "title": "Dirty rect composition and Present1 path",
+      "epic": "RenderCore",
+      "owner": "A2",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "R1-202",
+        "C0-003"
+      ],
+      "acceptance_criteria": "Composition texture is authoritative frame source; dirty rect copy and Present1 submission works",
+      "test_cases": "Small rect updates, multi-rect update, full-frame fallback correctness",
+      "risk_tag": "artifact"
+    },
+    {
+      "id": "R1-204",
+      "title": "Dirty rect coalescer with thresholds",
+      "epic": "RenderCore",
+      "owner": "A2",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "R1-203"
+      ],
+      "acceptance_criteria": "Rect merge policy and max rect cap with area fallback implemented and unit-tested",
+      "test_cases": "Fragmented rect stress, threshold crossing to full frame",
+      "risk_tag": "overdraw"
+    },
+    {
+      "id": "R1-205",
+      "title": "Device removed/reset recovery state machine",
+      "epic": "RenderCore",
+      "owner": "A2",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "R1-201",
+        "R1-202"
+      ],
+      "acceptance_criteria": "Handles DXGI device-loss errors with recreate/rebind and bounded retries",
+      "test_cases": "Synthetic device lost, graphics reset path validation",
+      "risk_tag": "stability"
+    },
+    {
+      "id": "S1-301",
+      "title": "WGS84 and ECEF math module",
+      "epic": "SceneCamera",
+      "owner": "A3",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [],
+      "acceptance_criteria": "Double-precision coordinate conversion and ellipsoid intersection utilities implemented",
+      "test_cases": "Roundtrip conversion set and ray hit/miss/tangent tests",
+      "risk_tag": "precision"
+    },
+    {
+      "id": "S1-302",
+      "title": "Free-fly/orbit camera controller",
+      "epic": "SceneCamera",
+      "owner": "A3",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "S1-301"
+      ],
+      "acceptance_criteria": "Camera modes, smoothing, and constraints produce stable movement without jitter",
+      "test_cases": "Mode switching, pitch clamps, long-session drift",
+      "risk_tag": "ux_controls"
+    },
+    {
+      "id": "S1-303",
+      "title": "Cursor-anchored zoom implementation",
+      "epic": "SceneCamera",
+      "owner": "A3",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "S1-301",
+        "S1-302"
+      ],
+      "acceptance_criteria": "Wheel zoom performs dolly toward cursor anchor and maintains projection stability",
+      "test_cases": "Anchor lock error bounds across zoom ranges and monitor boundaries",
+      "risk_tag": "interaction"
+    },
+    {
+      "id": "E1-401",
+      "title": "IOCP watcher for snapshot directory changes",
+      "epic": "Ingest",
+      "owner": "A5",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "C0-001"
+      ],
+      "acceptance_criteria": "ReadDirectoryChangesW overlapped watcher with generation coalescing and latest-only read scheduling",
+      "test_cases": "Burst notifications and missed event recovery",
+      "risk_tag": "io_backpressure"
+    },
+    {
+      "id": "E1-402",
+      "title": "Snapshot validator/parser with CRC and bounds checks",
+      "epic": "Ingest",
+      "owner": "A5",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "C0-001",
+        "E1-401"
+      ],
+      "acceptance_criteria": "Parser validates all structural invariants and surfaces deterministic errors",
+      "test_cases": "Fuzz corpus malformed headers, bad lengths, and crc mismatch",
+      "risk_tag": "data_integrity"
+    },
+    {
+      "id": "O1-403",
+      "title": "Event store with TTL heap and clear semantics",
+      "epic": "Overlay",
+      "owner": "A4",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "E1-402"
+      ],
+      "acceptance_criteria": "Upsert/clear/expire operations are O(log N) and deterministic by event_seq rules",
+      "test_cases": "TTL expiry races, stale clear vs upsert ordering",
+      "risk_tag": "state_consistency"
+    },
+    {
+      "id": "O1-404",
+      "title": "Dirty region generation from event diffs",
+      "epic": "Overlay",
+      "owner": "A4",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "O1-403",
+        "C0-003"
+      ],
+      "acceptance_criteria": "Diff path emits minimal dirty coverage with style-aware padding and tile merge strategy",
+      "test_cases": "Add/remove/modify/expire scenarios and coverage assertions",
+      "risk_tag": "render_efficiency"
+    },
+    {
+      "id": "O1-405",
+      "title": "Overlay throttle gate and coalesced update policy",
+      "epic": "Overlay",
+      "owner": "A4+A2",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "O1-404",
+        "R1-203"
+      ],
+      "acceptance_criteria": "Output presents capped to 10Hz under high-rate input while preserving latest state",
+      "test_cases": "20Hz and 50Hz ingest bursts, queue growth checks",
+      "risk_tag": "rate_control"
+    },
+    {
+      "id": "I1-501",
+      "title": "Overlapped named pipe server and framing",
+      "epic": "IPC",
+      "owner": "A6",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "C0-002"
+      ],
+      "acceptance_criteria": "Server accepts framed binary messages and emits ACK/ERROR replies with sequence tracking",
+      "test_cases": "Handshake, good/bad frames, reconnect behavior",
+      "risk_tag": "control_plane"
+    },
+    {
+      "id": "I1-502",
+      "title": "IPC security and client identity enforcement",
+      "epic": "IPC",
+      "owner": "A6",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "I1-501"
+      ],
+      "acceptance_criteria": "Pipe ACL plus impersonation checks enforce same-user and same-session access",
+      "test_cases": "Cross-user and cross-session denial cases",
+      "risk_tag": "security"
+    },
+    {
+      "id": "U1-503",
+      "title": "Interactive input router for overlay window",
+      "epic": "Input",
+      "owner": "A7",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "S1-302",
+        "H1-101"
+      ],
+      "acceptance_criteria": "Mouse and keyboard input controls camera in active mode with robust capture/focus handling",
+      "test_cases": "Drag with alt-tab, focus loss, key release edge cases",
+      "risk_tag": "focus_management"
+    },
+    {
+      "id": "U1-504",
+      "title": "IPC vs user input arbitration state machine",
+      "epic": "Input",
+      "owner": "A7+A6",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "I1-501",
+        "U1-503"
+      ],
+      "acceptance_criteria": "User lease model and deferred IPC coalescing prevent camera jitter under concurrent control",
+      "test_cases": "User drag plus IPC rotate flood and emergency stop precedence",
+      "risk_tag": "contention"
+    },
+    {
+      "id": "M1-601",
+      "title": "Monitor topology and DPI service",
+      "epic": "Monitors",
+      "owner": "A8",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "H1-103"
+      ],
+      "acceptance_criteria": "Topology changes produce deterministic monitor context updates and notifications",
+      "test_cases": "Hotplug, rotation, mixed DPI configurations",
+      "risk_tag": "topology"
+    },
+    {
+      "id": "M1-602",
+      "title": "Scale-preserving projection policy across monitors",
+      "epic": "Monitors",
+      "owner": "A8+A3",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "M1-601",
+        "S1-303"
+      ],
+      "acceptance_criteria": "Highest-res monitor defines reference density and other monitors maintain geographic scale",
+      "test_cases": "Mixed resolution span and mirror mode comparisons",
+      "risk_tag": "visual_consistency"
+    },
+    {
+      "id": "X1-701",
+      "title": "Startup manager and restart resilience",
+      "epic": "Resilience",
+      "owner": "A9",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "H1-103"
+      ],
+      "acceptance_criteria": "Per-user startup and restart behavior recovers app after failures without loops",
+      "test_cases": "Crash loop with backoff and relaunch validation",
+      "risk_tag": "availability"
+    },
+    {
+      "id": "X1-702",
+      "title": "State persistence and restore pipeline",
+      "epic": "Resilience",
+      "owner": "A9",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "S1-302",
+        "I1-501"
+      ],
+      "acceptance_criteria": "Camera/style/mode state atomically persisted and restored with fallback on corruption",
+      "test_cases": "Corrupt primary state file fallback to previous snapshot",
+      "risk_tag": "durability"
+    },
+    {
+      "id": "X1-703",
+      "title": "Session transition and power resume handlers",
+      "epic": "Resilience",
+      "owner": "A9",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "H1-103",
+        "R1-205"
+      ],
+      "acceptance_criteria": "Lock/unlock/logoff/logon and suspend/resume transitions preserve correctness and resource ownership",
+      "test_cases": "Cycle tests for session and power events",
+      "risk_tag": "lifecycle"
+    },
+    {
+      "id": "T1-801",
+      "title": "ETW instrumentation for render and ingest paths",
+      "epic": "Performance",
+      "owner": "A10",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "R1-203",
+        "E1-402",
+        "I1-501"
+      ],
+      "acceptance_criteria": "ETW emits render request/present/recovery and ingest throughput signals with correlation ids",
+      "test_cases": "Trace contains required events in idle and active runs",
+      "risk_tag": "observability"
+    },
+    {
+      "id": "T1-802",
+      "title": "WPR automation and perf gate scripts",
+      "epic": "Performance",
+      "owner": "A10",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "T1-801"
+      ],
+      "acceptance_criteria": "Automated capture and report pipeline compares baseline vs active scenarios and enforces thresholds",
+      "test_cases": "CI run generating pass/fail report for idle and burst scenarios",
+      "risk_tag": "regression"
+    },
+    {
+      "id": "Q1-901",
+      "title": "Snapshot parser fuzz harness",
+      "epic": "Reliability",
+      "owner": "A11",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "E1-402"
+      ],
+      "acceptance_criteria": "Fuzz harness runs corpus and random mutations without crashes or leaks",
+      "test_cases": "Structured and random fuzz campaigns with sanitizer checks",
+      "risk_tag": "robustness"
+    },
+    {
+      "id": "Q1-902",
+      "title": "IPC protocol fuzz and spam harness",
+      "epic": "Reliability",
+      "owner": "A11",
+      "status": "todo",
+      "priority": "P1",
+      "dependencies": [
+        "I1-501",
+        "I1-502"
+      ],
+      "acceptance_criteria": "Malformed and high-rate message campaigns preserve stability and bounded memory",
+      "test_cases": "Oversize frames, invalid crc, reconnect storms",
+      "risk_tag": "hardening"
+    },
+    {
+      "id": "Q1-903",
+      "title": "Soak and chaos validation suite",
+      "epic": "Reliability",
+      "owner": "A11",
+      "status": "todo",
+      "priority": "P0",
+      "dependencies": [
+        "T1-802",
+        "X1-703"
+      ],
+      "acceptance_criteria": "24h and 72h campaigns pass with no unplanned exits and bounded resource trends",
+      "test_cases": "Explorer restarts, display changes, session cycles, and device reset injections",
+      "risk_tag": "soak"
+    }
+  ]
+}

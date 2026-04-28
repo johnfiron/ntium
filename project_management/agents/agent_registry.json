@@ -1,0 +1,192 @@
+{
+  "project": "windows-11-25h2-live-wallpaper",
+  "version": "1.0.0",
+  "default_model": "composer-2-fast",
+  "agents": [
+    {
+      "id": "A0",
+      "name": "Program Architect / Integration Lead",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "contracts",
+        "integration_gates",
+        "merge_policy"
+      ],
+      "primary_outputs": [
+        "docs/contracts/event_snapshot_v1.md",
+        "docs/contracts/ipc_pipe_v1.md",
+        "docs/contracts/render_invalidation_api.md",
+        "docs/architecture/integration_gates.md"
+      ]
+    },
+    {
+      "id": "A1",
+      "name": "Win32 Desktop Host",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "desktop_attach",
+        "icon_visibility",
+        "shell_events"
+      ],
+      "primary_outputs": [
+        "src/platform/win32/DesktopHost.*",
+        "src/platform/win32/DesktopIconController.*"
+      ]
+    },
+    {
+      "id": "A2",
+      "name": "D3D11 Render Core",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "adapter_device_manager",
+        "swapchain_manager",
+        "dirty_present"
+      ],
+      "primary_outputs": [
+        "src/render/RenderCoreD3D11.*",
+        "src/render/SwapchainManager.*",
+        "src/render/DirtyRectCoalescer.*"
+      ]
+    },
+    {
+      "id": "A3",
+      "name": "Globe Scene + Camera",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "wgs84_math",
+        "camera_controller",
+        "cursor_anchor_zoom"
+      ],
+      "primary_outputs": [
+        "src/scene/GeoMath.*",
+        "src/scene/CameraController.*"
+      ]
+    },
+    {
+      "id": "A4",
+      "name": "Overlay Event Engine",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "event_store",
+        "overlay_diff",
+        "dirty_region_generation"
+      ],
+      "primary_outputs": [
+        "src/overlay/EventStore.*",
+        "src/overlay/OverlayDiff.*"
+      ]
+    },
+    {
+      "id": "A5",
+      "name": "Snapshot Ingest Pipeline",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "iocp_watcher",
+        "snapshot_parser",
+        "sequence_coalescing"
+      ],
+      "primary_outputs": [
+        "src/ingest/ProgressWatcher.*",
+        "src/ingest/SnapshotParser.*"
+      ]
+    },
+    {
+      "id": "A6",
+      "name": "IPC Control Plane",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "named_pipe_server",
+        "protocol_validation",
+        "security_enforcement"
+      ],
+      "primary_outputs": [
+        "src/ipc/ControlPipeServer.*",
+        "src/ipc/PipeProtocol.*"
+      ]
+    },
+    {
+      "id": "A7",
+      "name": "Input + Arbitration",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "live_input_router",
+        "focus_capture",
+        "ipc_user_arbitration"
+      ],
+      "primary_outputs": [
+        "src/input/InputRouter.*",
+        "src/input/ArbitrationEngine.*"
+      ]
+    },
+    {
+      "id": "A8",
+      "name": "Multi-monitor + DPI",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "monitor_topology",
+        "dpi_transforms",
+        "scale_preservation"
+      ],
+      "primary_outputs": [
+        "src/platform/win32/MonitorManager.*",
+        "src/scene/ProjectionPolicy.*"
+      ]
+    },
+    {
+      "id": "A9",
+      "name": "Startup + Session Resilience",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "startup_policy",
+        "session_transitions",
+        "state_restore"
+      ],
+      "primary_outputs": [
+        "src/runtime/StartupManager.*",
+        "src/runtime/SessionManager.*",
+        "src/runtime/StateStore.*"
+      ]
+    },
+    {
+      "id": "A10",
+      "name": "Power + Performance Validation",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "etw_instrumentation",
+        "wpr_harness",
+        "regression_gates"
+      ],
+      "primary_outputs": [
+        "tools/perf/*.ps1",
+        "docs/perf/perf_gate_spec.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "name": "Reliability / Fuzz / Soak",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "fuzz_harnesses",
+        "chaos_suite",
+        "soak_tests"
+      ],
+      "primary_outputs": [
+        "tests/fuzz/*",
+        "tests/soak/*",
+        "docs/reliability/soak_report_template.md"
+      ]
+    }
+  ]
+}

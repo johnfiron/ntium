@@ -1,0 +1,104 @@
+flowchart TD
+  C0001[C0-001 Event Snapshot Spec]
+  C0002[C0-002 IPC Wire Spec]
+  C0003[C0-003 Render Invalidation Contract]
+
+  H1101[H1-101 DefView Attach]
+  H1102[H1-102 Icon Visibility Manager]
+  H1103[H1-103 Shell Event Router]
+
+  R1201[R1-201 Adapter Device Manager]
+  R1202[R1-202 Monitor Swapchain Manager]
+  R1203[R1-203 Dirty Present Pipeline]
+  R1204[R1-204 Rect Coalescer]
+  R1205[R1-205 Device Lost Recovery]
+
+  S1301[S1-301 Geo Math Core]
+  S1302[S1-302 Camera Modes]
+  S1303[S1-303 Cursor Anchored Zoom]
+
+  E1401[E1-401 IOCP Watcher]
+  E1402[E1-402 Snapshot Parser]
+
+  O1403[O1-403 Event Store TTL]
+  O1404[O1-404 Dirty Region Diff]
+  O1405[O1-405 Overlay Throttle <=10Hz]
+
+  I1501[I1-501 Named Pipe Server]
+  I1502[I1-502 IPC Security]
+  U1503[U1-503 Input Router]
+  U1504[U1-504 Input IPC Arbitration]
+
+  M1601[M1-601 Monitor Topology]
+  M1602[M1-602 Scale Preserve Policy]
+
+  X1701[X1-701 Startup Restart]
+  X1702[X1-702 State Restore]
+  X1703[X1-703 Session Power]
+
+  T1801[T1-801 ETW Instrumentation]
+  T1802[T1-802 WPR Automation]
+
+  Q1901[Q1-901 Parser Fuzz]
+  Q1902[Q1-902 IPC Fuzz]
+  Q1903[Q1-903 Soak Chaos]
+  G5001[G5-001 Release Exit Gate]
+
+  C0003 --> H1101
+  H1101 --> H1102
+  H1101 --> H1103
+
+  C0003 --> R1201
+  R1201 --> R1202
+  R1202 --> R1203
+  R1203 --> R1204
+  R1201 --> R1205
+  R1202 --> R1205
+
+  S1301 --> S1302
+  S1301 --> S1303
+  S1302 --> S1303
+
+  C0001 --> E1401
+  C0001 --> E1402
+  E1401 --> E1402
+
+  E1402 --> O1403
+  O1403 --> O1404
+  C0003 --> O1404
+  O1404 --> O1405
+  R1203 --> O1405
+
+  C0002 --> I1501
+  I1501 --> I1502
+  S1302 --> U1503
+  H1101 --> U1503
+  I1501 --> U1504
+  U1503 --> U1504
+
+  H1103 --> M1601
+  M1601 --> M1602
+  S1303 --> M1602
+
+  H1103 --> X1701
+  S1302 --> X1702
+  I1501 --> X1702
+  H1103 --> X1703
+  R1205 --> X1703
+
+  R1203 --> T1801
+  E1402 --> T1801
+  I1501 --> T1801
+  T1801 --> T1802
+
+  E1402 --> Q1901
+  I1501 --> Q1902
+  I1502 --> Q1902
+  T1802 --> Q1903
+  X1703 --> Q1903
+
+  Q1901 --> G5001
+  Q1902 --> G5001
+  Q1903 --> G5001
+  M1602 --> G5001
+  O1405 --> G5001

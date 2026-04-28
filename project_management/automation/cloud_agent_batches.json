@@ -1,0 +1,122 @@
+{
+  "program": "windows-11-25h2-live-wallpaper",
+  "version": "1.0.0",
+  "execution_policy": {
+    "branch_prefix": "cursor/",
+    "branch_suffix": "-2e4d",
+    "commit_per_ticket": true,
+    "require_pr_per_branch": true,
+    "default_base_branch": "main"
+  },
+  "batches": [
+    {
+      "id": "batch-0-contract-freeze",
+      "description": "Freeze wire/data and invalidation contracts",
+      "parallel_agents": ["A0", "A4", "A5", "A6", "A7", "A2"],
+      "tickets": ["C0-001", "C0-002", "C0-003"],
+      "gate": {
+        "name": "G0-contracts",
+        "required_tickets_done": ["C0-001", "C0-002", "C0-003"]
+      }
+    },
+    {
+      "id": "batch-1-foundation",
+      "description": "Build host, render, scene, ingest, and ipc foundations in parallel",
+      "depends_on_gate": "G0-contracts",
+      "parallel_agents": ["A1", "A2", "A3", "A5", "A6"],
+      "tickets": [
+        "H1-101",
+        "H1-103",
+        "R1-201",
+        "R1-202",
+        "S1-301",
+        "S1-302",
+        "E1-401",
+        "E1-402",
+        "I1-501",
+        "I1-502"
+      ],
+      "gate": {
+        "name": "G1-foundation",
+        "required_tickets_done": [
+          "H1-101",
+          "R1-202",
+          "S1-302",
+          "E1-402",
+          "I1-502"
+        ]
+      }
+    },
+    {
+      "id": "batch-2-feature-slices",
+      "description": "Integrate dirty rendering, overlays, camera zoom, and interaction",
+      "depends_on_gate": "G1-foundation",
+      "parallel_agents": ["A2", "A3", "A4", "A7", "A8"],
+      "tickets": [
+        "R1-203",
+        "R1-204",
+        "R1-205",
+        "S1-303",
+        "O1-403",
+        "O1-404",
+        "O1-405",
+        "U1-503",
+        "U1-504",
+        "M1-601",
+        "M1-602"
+      ],
+      "gate": {
+        "name": "G2-live-overlay",
+        "required_tickets_done": [
+          "R1-203",
+          "S1-303",
+          "O1-405",
+          "U1-504",
+          "M1-602"
+        ]
+      }
+    },
+    {
+      "id": "batch-3-resilience-and-performance",
+      "description": "Harden startup/session and establish perf instrumentation",
+      "depends_on_gate": "G2-live-overlay",
+      "parallel_agents": ["A9", "A10"],
+      "tickets": ["X1-701", "X1-702", "X1-703", "T1-801", "T1-802"],
+      "gate": {
+        "name": "G3-operational-readiness",
+        "required_tickets_done": [
+          "X1-703",
+          "T1-802"
+        ]
+      }
+    },
+    {
+      "id": "batch-4-reliability-exit",
+      "description": "Execute fuzz, soak, and final release gate",
+      "depends_on_gate": "G3-operational-readiness",
+      "parallel_agents": ["A11", "A0"],
+      "tickets": ["Q1-901", "Q1-902", "Q1-903", "G5-001"],
+      "gate": {
+        "name": "G5-release-exit",
+        "required_tickets_done": ["Q1-901", "Q1-902", "Q1-903", "G5-001"]
+      }
+    }
+  ],
+  "launch_templates": [
+    {
+      "name": "contract-agent-launch",
+      "model": "composer-2-fast",
+      "instructions": "Work ticket-by-ticket. Commit and push each logical change. Update PR each iteration."
+    },
+    {
+      "name": "implementation-agent-launch",
+      "model": "composer-2-fast",
+      "instructions": "Implement only assigned tickets. Run relevant tests. Commit and push before and after test fixes."
+    },
+    {
+      "name": "validation-agent-launch",
+      "model": "composer-2-fast",
+      "instructions": "Run perf/reliability suites, produce artifacts, and block gate on regressions."
+    }
+  ]
+}
