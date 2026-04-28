@@ -14,21 +14,17 @@
       "description": "Stabilize 4-state data pipeline and produce deterministic assets",
       "parallel_agents": [
         "P2-A1",
-        "P2-A2"
+        "P2-A6"
       ],
       "tickets": [
-        "P2-DATA-001",
-        "P2-DATA-002",
-        "P2-DATA-003",
-        "P2-DATA-004"
+        "D2-001",
+        "D2-002"
       ],
       "gate": {
         "name": "P2-G0-data-ready",
         "required_tickets_done": [
-          "P2-DATA-001",
-          "P2-DATA-002",
-          "P2-DATA-003",
-          "P2-DATA-004"
+          "D2-001",
+          "D2-002"
         ]
       }
     },
@@ -37,22 +33,18 @@
       "description": "Create real Win32 app entrypoint and runtime bootstrap graph",
       "depends_on_gate": "P2-G0-data-ready",
       "parallel_agents": [
-        "P2-A3",
-        "P2-A4"
+        "P2-A2",
+        "P2-A0"
       ],
       "tickets": [
-        "P2-APP-101",
-        "P2-APP-102",
-        "P2-APP-103",
-        "P2-APP-104"
+        "A2-001",
+        "A2-002"
       ],
       "gate": {
         "name": "P2-G1-app-launches",
         "required_tickets_done": [
-          "P2-APP-101",
-          "P2-APP-102",
-          "P2-APP-103",
-          "P2-APP-104"
+          "A2-001",
+          "A2-002"
         ]
       }
     },
@@ -61,25 +53,23 @@
       "description": "Wire desktop host + render runtime and show first watchable frame",
       "depends_on_gate": "P2-G1-app-launches",
       "parallel_agents": [
-        "P2-A5",
-        "P2-A6",
-        "P2-A7"
+        "P2-A3",
+        "P2-A4"
       ],
       "tickets": [
-        "P2-RENDER-201",
-        "P2-RENDER-202",
-        "P2-RENDER-203",
-        "P2-RENDER-204",
-        "P2-HOST-205"
+        "H2-001",
+        "H2-002",
+        "R2-001",
+        "R2-002",
+        "M2-001"
       ],
       "gate": {
         "name": "P2-G2-first-watchable-desktop-frame",
         "required_tickets_done": [
-          "P2-RENDER-201",
-          "P2-RENDER-202",
-          "P2-RENDER-203",
-          "P2-RENDER-204",
-          "P2-HOST-205"
+          "H2-001",
+          "R2-001",
+          "R2-002",
+          "M2-001"
         ]
       }
     },
@@ -88,22 +78,24 @@
       "description": "Wire camera input, IPC controls, and live overlay updates",
       "depends_on_gate": "P2-G2-first-watchable-desktop-frame",
       "parallel_agents": [
-        "P2-A8",
-        "P2-A9"
+        "P2-A5",
+        "P2-A4"
       ],
       "tickets": [
-        "P2-CTRL-301",
-        "P2-CTRL-302",
-        "P2-OVL-303",
-        "P2-OVL-304"
+        "C2-001",
+        "C2-002",
+        "C2-003",
+        "O2-001",
+        "O2-002"
       ],
       "gate": {
         "name": "P2-G3-interactive-demo",
         "required_tickets_done": [
-          "P2-CTRL-301",
-          "P2-CTRL-302",
-          "P2-OVL-303",
-          "P2-OVL-304"
+          "C2-001",
+          "C2-002",
+          "C2-003",
+          "O2-001",
+          "O2-002"
         ]
       }
     },
@@ -112,22 +104,24 @@
       "description": "Add deterministic demo runbook, smoke tests, and evidence bundle",
       "depends_on_gate": "P2-G3-interactive-demo",
       "parallel_agents": [
-        "P2-A10",
-        "P2-A11"
+        "P2-A6",
+        "P2-A0"
       ],
       "tickets": [
-        "P2-DEMO-401",
-        "P2-DEMO-402",
-        "P2-DEMO-403",
-        "P2-DEMO-404"
+        "X2-001",
+        "X2-002",
+        "V2-001",
+        "V2-002",
+        "G6-001"
       ],
       "gate": {
         "name": "P2-G4-watchable-demo-ready",
         "required_tickets_done": [
-          "P2-DEMO-401",
-          "P2-DEMO-402",
-          "P2-DEMO-403",
-          "P2-DEMO-404"
+          "X2-001",
+          "X2-002",
+          "V2-001",
+          "V2-002",
+          "G6-001"
         ]
       }
     }

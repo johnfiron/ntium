@@ -18,11 +18,11 @@ demonstration on Windows 11 25H2.
 
 Follow `automation/cloud_agent_batches.json` strictly:
 
-1. `p2-batch-0-data-hardening`
-2. `p2-batch-1-app-bootstrap`
-3. `p2-batch-2-render-asset-integration`
-4. `p2-batch-3-overlay-ipc-input-integration`
-5. `p2-batch-4-desktop-demo-and-gates`
+1. `batch-0-data-stabilization`
+2. `batch-1-app-bootstrap`
+3. `batch-2-desktop-render-integration`
+4. `batch-3-controls-and-overlay`
+5. `batch-4-demo-hardening-and-runbook`
 
 Do not start a batch until its dependency gate is satisfied.
 
