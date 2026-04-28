@@ -70,6 +70,59 @@ Outputs:
 
 ---
 
+## 4-state setup (Maryland, Delaware, Virginia, West Virginia)
+
+The repo now includes helper scripts and config for your requested 4-state test region.
+
+### 1) Download state extracts + boundaries
+
+```bash
+mkdir -p data/raw/osm_states data/raw/boundaries
+curl -L -o data/raw/osm_states/maryland-latest.osm.pbf https://download.geofabrik.de/north-america/us/maryland-latest.osm.pbf
+curl -L -o data/raw/osm_states/delaware-latest.osm.pbf https://download.geofabrik.de/north-america/us/delaware-latest.osm.pbf
+curl -L -o data/raw/osm_states/virginia-latest.osm.pbf https://download.geofabrik.de/north-america/us/virginia-latest.osm.pbf
+curl -L -o data/raw/osm_states/west-virginia-latest.osm.pbf https://download.geofabrik.de/north-america/us/west-virginia-latest.osm.pbf
+
+curl -L -o data/raw/boundaries/cb_2023_us_state_500k.zip https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_us_state_500k.zip
+unzip -o data/raw/boundaries/cb_2023_us_state_500k.zip -d data/raw/boundaries
+ogr2ogr -f GeoJSON data/raw/aoi_4states.geojson data/raw/boundaries/cb_2023_us_state_500k.shp \
+  -dialect SQLITE \
+  -sql "SELECT ST_Union(geometry) AS geometry FROM cb_2023_us_state_500k WHERE STUSPS IN ('MD','DE','VA','WV')"
+```
+
+### 2) Build merged buildings source
+
+```bash
+python3 tools/data_pipeline/build_4state_buildings.py \
+  --osm-dir data/raw/osm_states \
+  --out-gpkg data/raw/buildings.gpkg
+```
+
+### 3) Fetch and clip 3DEP DEM
+
+```bash
+python3 tools/data_pipeline/fetch_dem_3dep.py \
+  --aoi data/raw/aoi_4states.geojson \
+  --out-dem data/raw/dem.tif
+```
+
+### 4) Create local config and run pipeline
+
+```bash
+cp tools/data_pipeline/config/pipeline_config.local.example.4states.json \
+   tools/data_pipeline/config/pipeline_config.local.json
+
+python3 tools/data_pipeline/run_pipeline.py \
+  --config tools/data_pipeline/config/pipeline_config.local.json
+```
+
+Notes:
+
+- `pipeline_config.local.json` is git-ignored by policy.
+- The 4-state AOI is large. Start with `raster_resolution_m: 10.0` before trying finer resolutions.
+
+---
+
 ## Optional live provider download
 
 Remote provider integration should enforce:
