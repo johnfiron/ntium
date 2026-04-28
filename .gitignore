@@ -1,0 +1,52 @@
+# Local environment files
+.env
+.env.*
+*.local.env
+
+# Secrets / credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.kdbx
+*.secrets.json
+*secrets*.json
+*credentials*.json
+api_keys.json
+credentials.json
+secrets.json
+
+# Local config overrides (never commit)
+tools/data_pipeline/config/*.local.json
+tools/data_pipeline/config/*.private.json
+
+# Data pipeline artifacts
+data/raw/**
+data/processed/**
+data/work/**
+data/cache/**
+tools/data_pipeline/out/**
+tools/data_pipeline/tmp/**
+
+# Build artifacts
+build/
+dist/
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.exe
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pytest_cache/
+.mypy_cache/
+
+# Demo runtime binaries (source and reports may be committed explicitly)
+tools/demo/bin/**
