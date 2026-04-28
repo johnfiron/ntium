@@ -17,7 +17,7 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Iterable, Set, Tuple
 
 
 def run(cmd: list[str], *, dry_run: bool = False) -> None:
@@ -54,6 +54,51 @@ def load_config(path: Path) -> Dict:
 
 def ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
+
+
+def quote_ident(name: str) -> str:
+    return '"' + name.replace('"', '""') + '"'
+
+
+def layer_fields(dataset_path: Path, layer_name: str) -> Set[str]:
+    out = subprocess.check_output(
+        ["ogrinfo", "-ro", "-so", "-json", str(dataset_path), layer_name],
+        text=True,
+    )
+    data = json.loads(out)
+    layers = data.get("layers", [])
+    if not layers:
+        raise RuntimeError(f"No layers found while inspecting {dataset_path}:{layer_name}")
+    return {field["name"] for field in layers[0].get("fields", [])}
+
+
+def tag_numeric_expr(tags_column: str, key: str) -> str:
+    marker = f"'\"{key}\"=>\"'"
+    extracted = (
+        f"CASE WHEN instr({tags_column}, {marker}) > 0 THEN "
+        f"substr(substr({tags_column}, instr({tags_column}, {marker}) + length({marker})), "
+        f"1, instr(substr({tags_column}, instr({tags_column}, {marker}) + length({marker})), '\"') - 1) "
+        f"END"
+    )
+    # Strip spaces/metric suffix to tolerate values like "12 m".
+    return f"CAST(REPLACE(REPLACE({extracted}, 'm', ''), ' ', '') AS REAL)"
+
+
+def height_select_sql(source_layer: str, fields: Iterable[str]) -> str:
+    field_set = set(fields)
+    terms: list[str] = []
+    if "height" in field_set:
+        terms.append(f"CAST({quote_ident('height')} AS REAL)")
+    if "other_tags" in field_set:
+        terms.append(tag_numeric_expr(quote_ident("other_tags"), "height"))
+    if "building:levels" in field_set:
+        terms.append(f"CAST({quote_ident('building:levels')} AS REAL) * 3.2")
+    if "other_tags" in field_set:
+        terms.append(f"{tag_numeric_expr(quote_ident('other_tags'), 'building:levels')} * 3.2")
+
+    when_clauses = " ".join(f"WHEN {expr} > 0 THEN {expr}" for expr in terms)
+    height_expr = f"CASE {when_clauses} ELSE 12.0 END" if when_clauses else "12.0"
+    return f"SELECT *, {height_expr} AS height_m FROM {quote_ident(source_layer)}"
 
 
 def map_extent_to_target(dem_src: Path, dem_reproj: Path, target_epsg: int, dry_run: bool) -> None:
@@ -105,6 +150,7 @@ def extract_buildings_from_osm(
         dry_run=dry_run,
     )
 
+    fields = layer_fields(raw_gpkg, "buildings_raw")
     run(
         [
             "ogr2ogr",
@@ -115,13 +161,7 @@ def extract_buildings_from_osm(
             "-dialect",
             "SQLITE",
             "-sql",
-            (
-                "SELECT *, CASE "
-                "WHEN CAST(height AS REAL) > 0 THEN CAST(height AS REAL) "
-                "WHEN CAST(\"building:levels\" AS REAL) > 0 THEN CAST(\"building:levels\" AS REAL) * 3.2 "
-                "ELSE 12.0 END AS height_m "
-                "FROM buildings_raw"
-            ),
+            height_select_sql("buildings_raw", fields),
             "-nln",
             "buildings_height",
         ],
@@ -152,6 +192,7 @@ def extract_buildings_from_gpkg(
     aoi_geojson: Path,
     dry_run: bool,
 ) -> None:
+    fields = layer_fields(src_gpkg, src_layer)
     run(
         [
             "ogr2ogr",
@@ -163,13 +204,7 @@ def extract_buildings_from_gpkg(
             "-dialect",
             "SQLITE",
             "-sql",
-            (
-                f"SELECT *, CASE "
-                f"WHEN CAST(height AS REAL) > 0 THEN CAST(height AS REAL) "
-                f"WHEN CAST(\"building:levels\" AS REAL) > 0 THEN CAST(\"building:levels\" AS REAL) * 3.2 "
-                f"ELSE 12.0 END AS height_m "
-                f"FROM {src_layer}"
-            ),
+            height_select_sql(src_layer, fields),
             "-nln",
             "buildings_height",
         ],
