@@ -1,7 +1,7 @@
 id,title,epic,owner,status,priority,component,dependencies,acceptance_criteria,test_cases,risk_tag
-C0-001,Event Snapshot Spec v1,Contracts,A0,todo,P0,contracts,,"Header+record schema, versioning, CRC rules, FULL_STATE/DELTA semantics approved and published","contract-review; parser-fixtures",protocol
-C0-002,IPC Wire Spec v1,Contracts,A0,todo,P0,contracts,,"Frame header, command enums, ACK/ERROR payloads, limits, and compatibility policy approved","wire-review; compatibility-matrix",protocol
-C0-003,Render Invalidation Contract,Contracts,A0,todo,P0,contracts,,"Thread ownership and dirty-rect invalidation API frozen; no ambiguous ownership remains","api-review; race-checklist",integration
+C0-001,Event Snapshot Spec v1,Contracts,A0,done,P0,contracts,,"Header+record schema, versioning, CRC rules, FULL_STATE/DELTA semantics approved and published","contract-review; parser-fixtures",protocol
+C0-002,IPC Wire Spec v1,Contracts,A0,done,P0,contracts,,"Frame header, command enums, ACK/ERROR payloads, limits, and compatibility policy approved","wire-review; compatibility-matrix",protocol
+C0-003,Render Invalidation Contract,Contracts,A0,done,P0,contracts,,"Thread ownership and dirty-rect invalidation API frozen; no ambiguous ownership remains","api-review; race-checklist",integration
 H1-101,DefView Attachment Controller,DesktopHost,A1,todo,P0,platform,C0-003,"Host window attaches relative to SHELLDLL_DefView parent on 25H2 without WorkerW dependency","manual-attach-25h2; explorer-restart-loop",shell
 H1-102,Icon Visibility Ownership Manager,DesktopHost,A1,todo,P1,platform,H1-101,"Hide/restore uses ownership token and does not clobber user-prehidden icon state","icon-toggle; crash-recovery-restore",shell
 H1-103,Shell Event Router,DesktopHost,A1,todo,P0,platform,H1-101,"TaskbarCreated/session/power/display events rebind host idempotently with no leaks","lock-unlock-loop; display-change-loop",shell
