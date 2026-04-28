@@ -1,0 +1,10 @@
+Live Validation Demo Results
+============================
+[PASS] snapshot-parser-valid-and-invalid :: accepted valid snapshot and rejected corrupted one
+[PASS] ipc-frame-parse-and-validation :: valid command accepted and malformed command rejected
+[PASS] camera-cursor-anchored-zoom :: anchor hit dolly and no-hit fallback both behaved as expected
+[PASS] overlay-store-throttle-dirty-coalescer :: event store, throttle, dirty generation, and monitor coalescing succeeded
+[PASS] input-router-and-arbitration :: input focus rules and ipc defer/drain arbitration behaved correctly
+----------------------------
+Passed 5 / 5 checks
+JSON report: tools/demo/out/live_validation_report.json

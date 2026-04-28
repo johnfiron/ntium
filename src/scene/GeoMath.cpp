@@ -127,7 +127,10 @@ RayEllipsoidIntersection IntersectRayWithEllipsoid(const Vec3d& ray_origin,
   RayEllipsoidIntersection result {};
   result.starts_inside = qc < 0.0;
 
-  if (qa <= epsilon) {
+  // qa is naturally ~1/a^2 for normalized Earth-scale rays (~2.4e-14), so
+  // using the geometric epsilon here can incorrectly reject valid rays.
+  // Degeneracy check should only guard true near-zero direction collapse.
+  if (qa <= std::numeric_limits<double>::epsilon()) {
     return result;
   }
 

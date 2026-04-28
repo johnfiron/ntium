@@ -1,0 +1,30 @@
+{
+  "timestamp_unix_s": 1777353945,
+  "checks": [
+    {
+      "name": "snapshot-parser-valid-and-invalid",
+      "pass": true,
+      "detail": "accepted valid snapshot and rejected corrupted one"
+    },
+    {
+      "name": "ipc-frame-parse-and-validation",
+      "pass": true,
+      "detail": "valid command accepted and malformed command rejected"
+    },
+    {
+      "name": "camera-cursor-anchored-zoom",
+      "pass": true,
+      "detail": "anchor hit dolly and no-hit fallback both behaved as expected"
+    },
+    {
+      "name": "overlay-store-throttle-dirty-coalescer",
+      "pass": true,
+      "detail": "event store, throttle, dirty generation, and monitor coalescing succeeded"
+    },
+    {
+      "name": "input-router-and-arbitration",
+      "pass": true,
+      "detail": "input focus rules and ipc defer/drain arbitration behaved correctly"
+    }
+  ]
+}
