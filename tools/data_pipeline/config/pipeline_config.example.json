@@ -1,0 +1,21 @@
+{
+  "data": {
+    "aoi_geojson": "tools/data_pipeline/config/aoi.example.geojson",
+    "raw_dir": "data/raw",
+    "processed_dir": "data/processed",
+    "output_dir": "data/processed/out",
+    "dem_path": "data/raw/dem.tif",
+    "buildings_source": {
+      "type": "gpkg",
+      "path": "data/raw/buildings.gpkg",
+      "layer": "buildings"
+    }
+  },
+  "processing": {
+    "target_epsg": 3857,
+    "raster_resolution_m": 2.0
+  },
+  "tiles": {
+    "tile_size_m": 1024
+  }
+}
