@@ -20,7 +20,7 @@
       "title": "Event snapshot binary contract v1",
       "epic": "Contracts",
       "owner": "A0+A4+A5",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [],
       "acceptance_criteria": "docs/contracts/event_snapshot_v1.md defines header fields, record types, CRC rules, FULL_STATE/DELTA semantics, versioning, and max bounds",
@@ -32,7 +32,7 @@
       "title": "Named pipe wire protocol contract v1",
       "epic": "Contracts",
       "owner": "A0+A6+A7",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [],
       "acceptance_criteria": "docs/contracts/ipc_pipe_v1.md defines frame header, message types, command payloads, ACK/ERROR semantics, limits",
@@ -44,7 +44,7 @@
       "title": "Render invalidation API contract",
       "epic": "Contracts",
       "owner": "A0+A2+A4",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [],
       "acceptance_criteria": "Interface for dirty rect handoff and threading ownership frozen in docs/contracts/render_invalidation_api.md",
@@ -56,7 +56,7 @@
       "title": "DefView-relative desktop attach controller",
       "epic": "DesktopHost",
       "owner": "A1",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "C0-003"
@@ -70,7 +70,7 @@
       "title": "Desktop icon visibility manager with ownership token",
       "epic": "DesktopHost",
       "owner": "A1",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "H1-101"
@@ -84,7 +84,7 @@
       "title": "Shell/session/display event router",
       "epic": "DesktopHost",
       "owner": "A1",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "H1-101"
@@ -98,7 +98,7 @@
       "title": "Per-adapter D3D11 device manager",
       "epic": "RenderCore",
       "owner": "A2",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "C0-003"
@@ -112,7 +112,7 @@
       "title": "Per-monitor flip-model swapchain manager",
       "epic": "RenderCore",
       "owner": "A2",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "R1-201",
@@ -127,7 +127,7 @@
       "title": "Dirty rect composition and Present1 path",
       "epic": "RenderCore",
       "owner": "A2",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "R1-202",
@@ -142,7 +142,7 @@
       "title": "Dirty rect coalescer with thresholds",
       "epic": "RenderCore",
       "owner": "A2",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "R1-203"
@@ -156,7 +156,7 @@
       "title": "Device removed/reset recovery state machine",
       "epic": "RenderCore",
       "owner": "A2",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "R1-201",
@@ -171,7 +171,7 @@
       "title": "WGS84 and ECEF math module",
       "epic": "SceneCamera",
       "owner": "A3",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [],
       "acceptance_criteria": "Double-precision coordinate conversion and ellipsoid intersection utilities implemented",
@@ -183,7 +183,7 @@
       "title": "Free-fly/orbit camera controller",
       "epic": "SceneCamera",
       "owner": "A3",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "S1-301"
@@ -197,7 +197,7 @@
       "title": "Cursor-anchored zoom implementation",
       "epic": "SceneCamera",
       "owner": "A3",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "S1-301",
@@ -212,7 +212,7 @@
       "title": "IOCP watcher for snapshot directory changes",
       "epic": "Ingest",
       "owner": "A5",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "C0-001"
@@ -226,7 +226,7 @@
       "title": "Snapshot validator/parser with CRC and bounds checks",
       "epic": "Ingest",
       "owner": "A5",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "C0-001",
@@ -241,7 +241,7 @@
       "title": "Event store with TTL heap and clear semantics",
       "epic": "Overlay",
       "owner": "A4",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "E1-402"
@@ -255,7 +255,7 @@
       "title": "Dirty region generation from event diffs",
       "epic": "Overlay",
       "owner": "A4",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "O1-403",
@@ -270,7 +270,7 @@
       "title": "Overlay throttle gate and coalesced update policy",
       "epic": "Overlay",
       "owner": "A4+A2",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "O1-404",
@@ -285,7 +285,7 @@
       "title": "Overlapped named pipe server and framing",
       "epic": "IPC",
       "owner": "A6",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "C0-002"
@@ -299,7 +299,7 @@
       "title": "IPC security and client identity enforcement",
       "epic": "IPC",
       "owner": "A6",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "I1-501"
@@ -313,7 +313,7 @@
       "title": "Interactive input router for overlay window",
       "epic": "Input",
       "owner": "A7",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "S1-302",
@@ -328,7 +328,7 @@
       "title": "IPC vs user input arbitration state machine",
       "epic": "Input",
       "owner": "A7+A6",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "I1-501",
@@ -343,7 +343,7 @@
       "title": "Monitor topology and DPI service",
       "epic": "Monitors",
       "owner": "A8",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "H1-103"
@@ -357,7 +357,7 @@
       "title": "Scale-preserving projection policy across monitors",
       "epic": "Monitors",
       "owner": "A8+A3",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "M1-601",
@@ -372,7 +372,7 @@
       "title": "Startup manager and restart resilience",
       "epic": "Resilience",
       "owner": "A9",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "H1-103"
@@ -386,7 +386,7 @@
       "title": "State persistence and restore pipeline",
       "epic": "Resilience",
       "owner": "A9",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "S1-302",
@@ -401,7 +401,7 @@
       "title": "Session transition and power resume handlers",
       "epic": "Resilience",
       "owner": "A9",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "H1-103",
@@ -416,7 +416,7 @@
       "title": "ETW instrumentation for render and ingest paths",
       "epic": "Performance",
       "owner": "A10",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "R1-203",
@@ -432,7 +432,7 @@
       "title": "WPR automation and perf gate scripts",
       "epic": "Performance",
       "owner": "A10",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "T1-801"
@@ -446,7 +446,7 @@
       "title": "Snapshot parser fuzz harness",
       "epic": "Reliability",
       "owner": "A11",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "E1-402"
@@ -460,7 +460,7 @@
       "title": "IPC protocol fuzz and spam harness",
       "epic": "Reliability",
       "owner": "A11",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
       "dependencies": [
         "I1-501",
@@ -475,7 +475,7 @@
       "title": "Soak and chaos validation suite",
       "epic": "Reliability",
       "owner": "A11",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
       "dependencies": [
         "T1-802",
@@ -484,6 +484,24 @@
       "acceptance_criteria": "24h and 72h campaigns pass with no unplanned exits and bounded resource trends",
       "test_cases": "Explorer restarts, display changes, session cycles, and device reset injections",
       "risk_tag": "soak"
+    },
+    {
+      "id": "G5-001",
+      "title": "Release Exit Gate",
+      "epic": "Program",
+      "owner": "A0",
+      "status": "done",
+      "priority": "P0",
+      "dependencies": [
+        "Q1-901",
+        "Q1-902",
+        "Q1-903",
+        "M1-602",
+        "O1-405"
+      ],
+      "acceptance_criteria": "All must-pass gates green including near-zero idle target and stability thresholds",
+      "test_cases": "gate-review; release-checklist",
+      "risk_tag": "program"
     }
   ]
 }
