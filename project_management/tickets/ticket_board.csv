@@ -1,0 +1,35 @@
+id,title,epic,owner,status,priority,component,dependencies,acceptance_criteria,test_cases,risk_tag
+C0-001,Event Snapshot Spec v1,Contracts,A0,todo,P0,contracts,,"Header+record schema, versioning, CRC rules, FULL_STATE/DELTA semantics approved and published","contract-review; parser-fixtures",protocol
+C0-002,IPC Wire Spec v1,Contracts,A0,todo,P0,contracts,,"Frame header, command enums, ACK/ERROR payloads, limits, and compatibility policy approved","wire-review; compatibility-matrix",protocol
+C0-003,Render Invalidation Contract,Contracts,A0,todo,P0,contracts,,"Thread ownership and dirty-rect invalidation API frozen; no ambiguous ownership remains","api-review; race-checklist",integration
+H1-101,DefView Attachment Controller,DesktopHost,A1,todo,P0,platform,C0-003,"Host window attaches relative to SHELLDLL_DefView parent on 25H2 without WorkerW dependency","manual-attach-25h2; explorer-restart-loop",shell
+H1-102,Icon Visibility Ownership Manager,DesktopHost,A1,todo,P1,platform,H1-101,"Hide/restore uses ownership token and does not clobber user-prehidden icon state","icon-toggle; crash-recovery-restore",shell
+H1-103,Shell Event Router,DesktopHost,A1,todo,P0,platform,H1-101,"TaskbarCreated/session/power/display events rebind host idempotently with no leaks","lock-unlock-loop; display-change-loop",shell
+R1-201,Adapter Device Manager,RenderCore,A2,todo,P0,render,C0-003,"Per-adapter D3D11 device creation by LUID works with debug/runtime modes","adapter-enum; mixed-gpu-smoke",render
+R1-202,Per Monitor Swapchain Manager,RenderCore,A2,todo,P0,render,R1-201,"Flip-model swapchain lifecycle per monitor supports resize and recreate safely","resize-storm; hotplug-monitor",render
+R1-203,Dirty Present Pipeline,RenderCore,A2,todo,P0,render,R1-202|C0-003,"Composition texture + Present1 dirty rect path renders only invalid regions","dirty-rect-visual; full-frame-fallback",render
+R1-204,Dirty Rect Coalescer,RenderCore,A2,todo,P1,render,R1-203,"Rect merge/cap thresholds reduce overhead and preserve correctness","rect-fuzz; coalesce-threshold-check",render
+R1-205,Device Lost Recovery FSM,RenderCore,A2,todo,P0,render,R1-202,"Device removed/reset recovery rebuilds resources and returns to rendering without restart","device-removed-injection; tdr-recovery",reliability
+S1-301,Geo Math Core WGS84 ECEF,SceneCamera,A3,todo,P0,scene,,"Geodetic/ECEF conversions and ray-ellipsoid intersections are unit-tested and numerically stable","geo-roundtrip; raycast-edge-cases",math
+S1-302,Camera Modes and State,SceneCamera,A3,todo,P0,scene,S1-301,"Free-fly/orbit camera state machine works with double precision authoritative state","camera-mode-switch; precision-stability",math
+S1-303,Cursor Anchored Dolly Zoom,SceneCamera,A3,todo,P0,scene,S1-301|S1-302,"Zoom moves toward cursor hit anchor and keeps anchor screen error within tolerance","zoom-anchor-accuracy; no-hit-fallback",math
+E1-401,IOCP Snapshot Directory Watcher,Ingest,A5,todo,P0,ingest,C0-001,"ReadDirectoryChangesW with IOCP coalesces to latest generation and avoids polling","notify-burst; latest-only-queue",protocol
+E1-402,Snapshot Validator Parser,Ingest,A5,todo,P0,ingest,C0-001|E1-401,"Parser enforces bounds/version/CRC and rejects malformed snapshots safely","corrupt-file-suite; parser-fuzz-seed",protocol
+O1-403,Event Store and TTL Heap,Overlay,A4,todo,P0,overlay,E1-402,"Upsert/clear/expiry semantics are deterministic with bounded memory","ttl-expiry; clear-vs-stale",algorithm
+O1-404,Dirty Region Generation,Overlay,A4,todo,P0,overlay,O1-403|R1-203,"Adds/removes/modifies generate minimal padded dirty regions and request redraw correctly","dirty-region-diff; tile-bitset-check",algorithm
+O1-405,Overlay Throttle Gate <=10Hz,Overlay,A4,todo,P0,overlay,O1-404|R1-204,"Input bursts above 10Hz coalesce while preserving final state and bounded latency","20hz-burst-throttle; no-queue-growth",power
+I1-501,Named Pipe Server Overlapped,ControlPlane,A6,todo,P0,ipc,C0-002,"Binary framed named pipe server handles connect/read/write with bounded payloads","pipe-smoke; disconnect-mid-frame",protocol
+I1-502,IPC Security Enforcement,ControlPlane,A6,todo,P0,ipc,I1-501,"Same-user SID and session checks enforced; remote clients rejected","sid-mismatch; session-mismatch",security
+U1-503,Interactive Input Router,Input,A7,todo,P0,input,S1-302|H1-101,"Mouse and keyboard controls work in active mode with clean capture/focus transitions","drag-capture-loss; keyboard-nav-smoke",ux
+U1-504,IPC and User Arbitration Engine,Input,A7,todo,P0,input,U1-503|I1-502,"Channel leases prevent jitter between user and IPC; deferred commands coalesce deterministically","input-vs-ipc-contention; emergency-stop",integration
+M1-601,Monitor Topology Tracker,Multimon,A8,todo,P0,platform,H1-101|R1-202,"Monitor add/remove/rotate/DPI changes trigger deterministic context rebuild","monitor-hotplug-loop; dpi-change-loop",multimon
+M1-602,Scale Preserving Projection Policy,Multimon,A8,todo,P0,scene,M1-601|S1-302,"Highest-resolution monitor anchors density while preserving world scale across outputs","mixed-res-span; mirror-mode-check",multimon
+X1-701,Startup and Restart Manager,Resilience,A9,todo,P0,runtime,H1-101,"Per-user startup and restart policy relaunches reliably without duplicate instances","logon-startup; crash-restart-loop",reliability
+X1-702,State Persistence Restore,Resilience,A9,todo,P1,runtime,X1-701,"Camera/style/layout restore uses atomic writes with rollback on corruption","state-corruption-recovery; restore-accuracy",reliability
+X1-703,Session Transition Manager,Resilience,A9,todo,P0,runtime,X1-701,"Lock/unlock/logoff/logon and suspend/resume paths pause/resume safely","session-transition-matrix; sleep-resume-loop",reliability
+T1-801,ETW Instrumentation and Counters,Validation,A10,todo,P0,perf,R1-203|O1-404|U1-504,"ETW events expose render requests, present counts, dirty coverage, and recovery timing","etw-schema-check; telemetry-smoke",observability
+T1-802,WPR Automation Harness,Validation,A10,todo,P0,perf,T1-801,"Automated baseline/idle/active captures produce comparable reports and thresholds","wpr-batch-run; threshold-regression-check",power
+Q1-901,Snapshot Parser Fuzz Harness,Reliability,A11,todo,P1,test,E1-402,"Malformed snapshot corpus cannot crash process or violate bounds","fuzz-24h-parser; asan-run",reliability
+Q1-902,IPC Fuzz and Spam Harness,Reliability,A11,todo,P1,test,I1-501,"Malformed packets and high-rate spam remain bounded with correct disconnect behavior","pipe-fuzz-24h; rate-limit-check",reliability
+Q1-903,Long Soak and Chaos Suite,Reliability,A11,todo,P0,test,T1-802|X1-703|R1-205,"24h/72h soak with explorer restart/device reset/session churn has zero unplanned exits","soak-24h; soak-72h; chaos-matrix",reliability
+G5-001,Release Exit Gate,Program,A0,todo,P0,program,Q1-901|Q1-902|Q1-903|M1-602|O1-405,"All must-pass gates green including near-zero idle target and stability thresholds","gate-review; release-checklist",program
