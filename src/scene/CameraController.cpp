@@ -22,6 +22,10 @@ Vec3d Subtract(const Vec3d& lhs, const Vec3d& rhs) {
   return Vec3d {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
 }
 
+double ClampMagnitude(double value, double max_abs) {
+  return std::clamp(value, -max_abs, max_abs);
+}
+
 Vec3d WrapYawPitchToForward(double yaw_rad, double pitch_rad) {
   const double cos_pitch = std::cos(pitch_rad);
   return Normalize(Vec3d {
@@ -134,14 +138,78 @@ void CameraController::TickOrbit(double delta_seconds, const OrbitControlInput& 
   state_.yaw_rad += input.yaw_delta_rad * angular_scale;
   state_.pitch_rad += input.pitch_delta_rad * angular_scale;
 
+  const Vec3d forward = ForwardDirection();
   const double zoom_scale =
       std::max(0.0, tuning_.orbit_zoom_units_per_sec) * delta_seconds;
-  state_.orbit_radius_m -= input.zoom_delta * zoom_scale;
+  const double zoom_distance_m = input.zoom_delta * zoom_scale;
+  if (std::fabs(zoom_distance_m) > 0.0) {
+    Vec3d anchor_ecef {};
+    if (ResolveOrbitZoomAnchor(input, &anchor_ecef)) {
+      ApplyOrbitAnchorDolly(zoom_distance_m, anchor_ecef);
+    } else {
+      ApplyOrbitCenterFallbackZoom(zoom_distance_m, forward);
+    }
+  } else {
+    // Preserve orbit invariants when only orbiting angularly.
+    state_.position_ecef = Add(state_.orbit_target_ecef, Scale(forward, -state_.orbit_radius_m));
+  }
+}
 
+bool CameraController::ResolveOrbitZoomAnchor(const OrbitControlInput& input,
+                                              Vec3d* out_anchor_ecef) const {
+  if (out_anchor_ecef == nullptr || !input.has_cursor_ray) {
+    return false;
+  }
+
+  const RayEllipsoidForwardHit anchor_hit = ClosestForwardRayEllipsoidHit(
+      input.cursor_ray_origin_ecef, input.cursor_ray_direction_ecef, Wgs84Ellipsoid());
+  if (!anchor_hit.hit) {
+    return false;
+  }
+
+  *out_anchor_ecef = anchor_hit.point;
+  return true;
+}
+
+void CameraController::ApplyOrbitAnchorDolly(double zoom_distance_m, const Vec3d& anchor_ecef) {
+  const Vec3d to_anchor = Subtract(anchor_ecef, state_.position_ecef);
+  const double anchor_distance = Length(to_anchor);
+  if (anchor_distance <= 1e-9) {
+    return;
+  }
+
+  const Vec3d toward_anchor = Scale(to_anchor, 1.0 / anchor_distance);
+  const double min_spacing = std::max(0.0, tuning_.min_orbit_radius_m);
+  const double max_forward_motion = std::max(0.0, anchor_distance - min_spacing);
+  const double max_backward_motion =
+      std::max(0.0, tuning_.max_orbit_radius_m - state_.orbit_radius_m);
+  const double signed_motion_m =
+      ClampMagnitude(zoom_distance_m, zoom_distance_m >= 0.0 ? max_forward_motion
+                                                              : max_backward_motion);
+  state_.position_ecef = Add(state_.position_ecef, Scale(toward_anchor, signed_motion_m));
+
+  // Keep orbit model authoritative after dolly translation.
   const Vec3d forward = ForwardDirection();
-  // Position the camera along the reverse-forward direction from orbit target.
-  state_.position_ecef =
-      Add(state_.orbit_target_ecef, Scale(forward, -state_.orbit_radius_m));
+  state_.orbit_target_ecef = Add(state_.position_ecef, Scale(forward, state_.orbit_radius_m));
+}
+
+void CameraController::ApplyOrbitCenterFallbackZoom(double zoom_distance_m,
+                                                    const Vec3d& forward_direction) {
+  const Vec3d forward = Normalize(forward_direction);
+  if (Length(forward) <= 1e-12) {
+    return;
+  }
+
+  // No-hit fallback: dolly along current view center instead of FOV-only zoom.
+  const double max_forward_motion =
+      std::max(0.0, state_.orbit_radius_m - tuning_.min_orbit_radius_m);
+  const double max_backward_motion =
+      std::max(0.0, tuning_.max_orbit_radius_m - state_.orbit_radius_m);
+  const double signed_motion_m =
+      ClampMagnitude(zoom_distance_m, zoom_distance_m >= 0.0 ? max_forward_motion
+                                                              : max_backward_motion);
+  state_.position_ecef = Add(state_.position_ecef, Scale(forward, signed_motion_m));
+  state_.orbit_target_ecef = Add(state_.position_ecef, Scale(forward, state_.orbit_radius_m));
 }
 
 void CameraController::TransitionToOrbit(bool preserve_view) {

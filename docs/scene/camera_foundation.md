@@ -61,7 +61,8 @@ and stable control interfaces before input plumbing and rendering integration.
 - **Orbit**
   - Camera orbits around an ECEF target point.
   - Yaw/pitch rotate view direction.
-  - Radius changes through zoom input and is clamped to allowed bounds.
+  - Zoom applies dolly translation (anchor-hit or center fallback) while keeping
+    orbit radius authoritative and clamped to allowed bounds.
 
 ### Authoritative camera state
 
@@ -88,6 +89,43 @@ This structure intentionally keeps mode update logic isolated so later tickets
 can add smoothing and external control arbitration without destabilizing basic
 kinematics.
 
+## Cursor-anchored dolly zoom (S1-303)
+
+Orbit zoom is implemented as a **dolly translation** (camera position changes in
+ECEF), not as an FOV-only effect:
+
+1. Resolve wheel input to world distance:
+   - `zoom_distance_m = zoom_delta * orbit_zoom_units_per_sec * dt`
+2. If `OrbitControlInput::has_cursor_ray=true`, cast
+   `cursor_ray_origin_ecef + t * cursor_ray_direction_ecef` against WGS84.
+3. If a forward hit exists (`t >= 0`), dolly camera along the ray from camera to
+   hit point (cursor anchor).
+4. If no forward hit exists (miss/invalid ray), use deterministic fallback:
+   dolly along current camera forward toward orbit center.
+5. Preserve authoritative orbit state after dolly:
+   - keep `orbit_radius_m` as the maintained orbit distance
+   - update `orbit_target_ecef = position_ecef + forward * orbit_radius_m`
+
+### No-hit fallback behavior
+
+No-hit fallback is triggered when:
+
+- `has_cursor_ray=false`
+- ray/ellipsoid does not intersect in front of the ray origin
+- ray direction is degenerate
+
+Fallback still performs dolly translation (forward/backward), so zoom remains
+responsive and physically consistent even when cursor points to sky or off-globe
+regions.
+
+### Precision and invariants
+
+- All camera/geo computations remain `double`.
+- `position_ecef`, `orbit_target_ecef`, and `orbit_radius_m` remain authoritative
+  in world-space meters.
+- Dolly motion is clamped against min/max orbit radius constraints to avoid
+  crossing anchor/target singularities.
+
 ## Mode switching semantics
 
 `SetMode(mode, preserve_view)` supports explicit transitions:
@@ -111,7 +149,6 @@ kinematics.
 The following are deferred to later tickets:
 
 - input device routing and focus/capture handling
-- cursor-anchored dolly zoom
 - inertial smoothing and damping model
 - persisted camera/session state
 - multi-monitor scale-preserving projection policy

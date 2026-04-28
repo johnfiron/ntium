@@ -60,6 +60,13 @@ struct OrbitControlInput {
 
   // Positive value zooms toward the target.
   double zoom_delta {0.0};
+
+  // Optional cursor ray in ECEF meters for anchor-preserving dolly zoom.
+  // When valid and intersecting the WGS84 ellipsoid, zoom translates the
+  // camera along the ray-to-hit direction instead of only changing radius.
+  bool has_cursor_ray {false};
+  Vec3d cursor_ray_origin_ecef {};
+  Vec3d cursor_ray_direction_ecef {};
 };
 
 struct CameraTickInput {
@@ -86,6 +93,10 @@ class CameraController {
 
   void TransitionToOrbit(bool preserve_view);
   void TransitionToFreeFly(bool preserve_view);
+
+  bool ResolveOrbitZoomAnchor(const OrbitControlInput& input, Vec3d* out_anchor_ecef) const;
+  void ApplyOrbitAnchorDolly(double zoom_distance_m, const Vec3d& anchor_ecef);
+  void ApplyOrbitCenterFallbackZoom(double zoom_distance_m, const Vec3d& forward_direction);
 
   void ClampState();
   Vec3d ForwardDirection() const;

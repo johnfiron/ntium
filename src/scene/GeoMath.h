@@ -36,6 +36,12 @@ struct RayEllipsoidIntersection {
   Vec3d point_far {};
 };
 
+struct RayEllipsoidForwardHit {
+  bool hit {false};
+  double t {0.0};
+  Vec3d point {};
+};
+
 constexpr double kWgs84SemiMajorMeters = 6378137.0;
 constexpr double kWgs84Flattening = 1.0 / 298.257223563;
 constexpr double kWgs84SemiMinorMeters =
@@ -56,6 +62,12 @@ GeodeticCoord EcefToGeodetic(const Vec3d& ecef,
                              const Ellipsoid& ellipsoid = Wgs84Ellipsoid());
 
 RayEllipsoidIntersection IntersectRayWithEllipsoid(
+    const Vec3d& ray_origin,
+    const Vec3d& ray_direction,
+    const Ellipsoid& ellipsoid = Wgs84Ellipsoid(),
+    double epsilon = 1e-12);
+
+RayEllipsoidForwardHit ClosestForwardRayEllipsoidHit(
     const Vec3d& ray_origin,
     const Vec3d& ray_direction,
     const Ellipsoid& ellipsoid = Wgs84Ellipsoid(),

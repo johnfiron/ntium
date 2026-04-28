@@ -164,4 +164,35 @@ RayEllipsoidIntersection IntersectRayWithEllipsoid(const Vec3d& ray_origin,
   return result;
 }
 
+RayEllipsoidForwardHit ClosestForwardRayEllipsoidHit(const Vec3d& ray_origin,
+                                                     const Vec3d& ray_direction,
+                                                     const Ellipsoid& ellipsoid,
+                                                     double epsilon) {
+  const RayEllipsoidIntersection intersection =
+      IntersectRayWithEllipsoid(ray_origin, ray_direction, ellipsoid, epsilon);
+
+  RayEllipsoidForwardHit hit {};
+  if (!intersection.intersects) {
+    return hit;
+  }
+
+  const bool near_is_forward = intersection.t_near >= 0.0;
+  const bool far_is_forward = intersection.t_far >= 0.0;
+  if (!near_is_forward && !far_is_forward) {
+    return hit;
+  }
+
+  if (near_is_forward) {
+    hit.hit = true;
+    hit.t = intersection.t_near;
+    hit.point = intersection.point_near;
+    return hit;
+  }
+
+  hit.hit = true;
+  hit.t = intersection.t_far;
+  hit.point = intersection.point_far;
+  return hit;
+}
+
 }  // namespace scene
