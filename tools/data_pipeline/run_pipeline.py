@@ -194,12 +194,29 @@ def height_select_sql(source_layer: str, fields: Iterable[str]) -> str:
     return f"SELECT *, {height_expr} AS height_m FROM {quote_ident(source_layer)}"
 
 
-def map_extent_to_target(dem_src: Path, dem_reproj: Path, target_epsg: int, dry_run: bool) -> None:
+def map_extent_to_target(
+    dem_src: Path,
+    dem_reproj: Path,
+    target_epsg: int,
+    res_m: float,
+    dry_run: bool,
+) -> None:
     run(
         [
             "gdalwarp",
             "-t_srs",
             f"EPSG:{target_epsg}",
+            "-tr",
+            str(res_m),
+            str(res_m),
+            "-co",
+            "TILED=YES",
+            "-co",
+            "COMPRESS=DEFLATE",
+            "-co",
+            "PREDICTOR=3",
+            "-co",
+            "BIGTIFF=IF_SAFER",
             str(dem_src),
             str(dem_reproj),
         ],
@@ -476,7 +493,7 @@ def main() -> int:
         dry_run=args.dry_run,
     )
 
-    map_extent_to_target(dem_path, dem_target, target_epsg, args.dry_run)
+    map_extent_to_target(dem_path, dem_target, target_epsg, res_m, args.dry_run)
 
     if args.dry_run:
         print("Dry run complete (bounds not computed).")
@@ -496,6 +513,14 @@ def main() -> int:
             "Float32",
             "-a_nodata",
             "0",
+            "-co",
+            "TILED=YES",
+            "-co",
+            "COMPRESS=DEFLATE",
+            "-co",
+            "PREDICTOR=3",
+            "-co",
+            "BIGTIFF=IF_SAFER",
             "-te",
             str(xmin),
             str(ymin),
@@ -510,6 +535,8 @@ def main() -> int:
     calc_exec = gdal_calc_command()
     run(
         [
+            "env",
+            "PYTHONPATH=/usr/lib/python3/dist-packages",
             calc_exec,
             "-A",
             str(dem_target),
@@ -518,6 +545,10 @@ def main() -> int:
             "--calc=A+B",
             "--type=Float32",
             "--NoDataValue=0",
+            "--co=TILED=YES",
+            "--co=COMPRESS=DEFLATE",
+            "--co=PREDICTOR=3",
+            "--co=BIGTIFF=IF_SAFER",
             f"--outfile={str(dsm_raster)}",
         ],
         dry_run=False,
