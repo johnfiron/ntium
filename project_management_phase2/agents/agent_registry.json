@@ -1,0 +1,84 @@
+{
+  "project": "windows-11-25h2-live-wallpaper-phase2",
+  "version": "1.0.0",
+  "default_model": "composer-2-fast",
+  "agents": [
+    {
+      "id": "P2-A0",
+      "name": "Phase 2 Integration Lead",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "phase_planning",
+        "integration_gates",
+        "merge_control"
+      ]
+    },
+    {
+      "id": "P2-A1",
+      "name": "Data Pipeline Stabilization",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "geometry_fixups",
+        "pipeline_stability",
+        "qc_outputs"
+      ]
+    },
+    {
+      "id": "P2-A2",
+      "name": "Win32 App Bootstrap",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "wWinMain",
+        "app_host",
+        "runtime_graph"
+      ]
+    },
+    {
+      "id": "P2-A3",
+      "name": "Desktop Host Integration",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "defview_attach",
+        "icon_ownership",
+        "shell_rebind"
+      ]
+    },
+    {
+      "id": "P2-A4",
+      "name": "Render Runtime Assembly",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "scene_renderer",
+        "asset_loading",
+        "dirty_present_integration"
+      ]
+    },
+    {
+      "id": "P2-A5",
+      "name": "Input IPC Arbitration Wiring",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "input_router",
+        "pipe_controls",
+        "lease_arbitration"
+      ]
+    },
+    {
+      "id": "P2-A6",
+      "name": "Desktop Demo Validation",
+      "subagent_type": "generalPurpose",
+      "mode": "readwrite",
+      "owns": [
+        "demo_runbook",
+        "smoke_tests",
+        "evidence_capture"
+      ]
+    }
+  ]
+}

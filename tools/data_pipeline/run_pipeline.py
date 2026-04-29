@@ -13,11 +13,10 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import os
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Dict, Iterable, Set, Tuple
+from typing import Any, Dict, Iterable, Optional, Set, Tuple
 
 
 def run(cmd: list[str], *, dry_run: bool = False) -> None:
@@ -72,6 +71,100 @@ def layer_fields(dataset_path: Path, layer_name: str) -> Set[str]:
     return {field["name"] for field in layers[0].get("fields", [])}
 
 
+def layer_summary(dataset_path: Path, layer_name: str) -> Dict[str, Any]:
+    out = subprocess.check_output(
+        ["ogrinfo", "-ro", "-so", "-json", str(dataset_path), layer_name],
+        text=True,
+    )
+    data = json.loads(out)
+    layers = data.get("layers", [])
+    if not layers:
+        raise RuntimeError(f"No layers found while inspecting {dataset_path}:{layer_name}")
+    return layers[0]
+
+
+def layer_feature_count(dataset_path: Path, layer_name: str) -> int:
+    summary = layer_summary(dataset_path, layer_name)
+    return int(summary.get("featureCount", 0))
+
+
+def layer_geometry_name(dataset_path: Path, layer_name: str) -> Optional[str]:
+    summary = layer_summary(dataset_path, layer_name)
+    geometry_fields = summary.get("geometryFields", [])
+    if not geometry_fields:
+        return None
+    geom_name = geometry_fields[0].get("name")
+    return geom_name if isinstance(geom_name, str) and geom_name else None
+
+
+def sqlite_scalar_int(dataset_path: Path, sql: str, value_key: str) -> int:
+    out = subprocess.check_output(
+        [
+            "ogrinfo",
+            "-ro",
+            "-json",
+            str(dataset_path),
+            "-dialect",
+            "SQLITE",
+            "-sql",
+            sql,
+        ],
+        text=True,
+    )
+    data = json.loads(out)
+    layers = data.get("layers", [])
+    if not layers:
+        return 0
+    features = layers[0].get("features", [])
+    if not features:
+        return 0
+    value = features[0].get("properties", {}).get(value_key, 0)
+    if value is None:
+        return 0
+    return int(value)
+
+
+def layer_invalid_geometry_count(dataset_path: Path, layer_name: str) -> Optional[int]:
+    geom_name = layer_geometry_name(dataset_path, layer_name)
+    if not geom_name:
+        return None
+    layer_ident = quote_ident(layer_name)
+    geom_ident = quote_ident(geom_name)
+    sql = (
+        f"SELECT COUNT(*) AS invalid_count FROM {layer_ident} "
+        f"WHERE {geom_ident} IS NULL OR ST_IsEmpty({geom_ident}) OR ST_IsValid({geom_ident}) = 0"
+    )
+    try:
+        return sqlite_scalar_int(dataset_path, sql, "invalid_count")
+    except subprocess.CalledProcessError:
+        return None
+
+
+def maybe_count_layer(dataset_path: Path, layer_name: str, dry_run: bool) -> Optional[int]:
+    if dry_run:
+        return None
+    return layer_feature_count(dataset_path, layer_name)
+
+
+def maybe_count_invalid(dataset_path: Path, layer_name: str, dry_run: bool) -> Optional[int]:
+    if dry_run:
+        return None
+    return layer_invalid_geometry_count(dataset_path, layer_name)
+
+
+def derive_skip_count(before: Optional[int], after: Optional[int]) -> Optional[int]:
+    if before is None or after is None:
+        return None
+    return max(0, before - after)
+
+
+def write_json(path: Path, payload: Dict[str, Any]) -> None:
+    ensure_dir(path.parent)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+    print(f"Wrote: {path}")
+
+
 def tag_numeric_expr(tags_column: str, key: str) -> str:
     marker = f"'\"{key}\"=>\"'"
     extracted = (
@@ -101,12 +194,29 @@ def height_select_sql(source_layer: str, fields: Iterable[str]) -> str:
     return f"SELECT *, {height_expr} AS height_m FROM {quote_ident(source_layer)}"
 
 
-def map_extent_to_target(dem_src: Path, dem_reproj: Path, target_epsg: int, dry_run: bool) -> None:
+def map_extent_to_target(
+    dem_src: Path,
+    dem_reproj: Path,
+    target_epsg: int,
+    res_m: float,
+    dry_run: bool,
+) -> None:
     run(
         [
             "gdalwarp",
             "-t_srs",
             f"EPSG:{target_epsg}",
+            "-tr",
+            str(res_m),
+            str(res_m),
+            "-co",
+            "TILED=YES",
+            "-co",
+            "COMPRESS=DEFLATE",
+            "-co",
+            "PREDICTOR=3",
+            "-co",
+            "BIGTIFF=IF_SAFER",
             str(dem_src),
             str(dem_reproj),
         ],
@@ -133,7 +243,7 @@ def extract_buildings_from_osm(
     clipped_gpkg: Path,
     aoi_geojson: Path,
     dry_run: bool,
-) -> None:
+) -> Dict[str, Optional[int]]:
     run(
         [
             "ogr2ogr",
@@ -177,21 +287,47 @@ def extract_buildings_from_osm(
             str(height_gpkg),
             "-clipsrc",
             str(aoi_geojson),
+            "-skipinvalid",
+            "-skipfailures",
+            "-nlt",
+            "PROMOTE_TO_MULTI",
             "-nln",
             "buildings_height",
         ],
         dry_run=dry_run,
     )
+    source_total = maybe_count_layer(raw_gpkg, "buildings_raw", dry_run)
+    source_invalid = maybe_count_invalid(raw_gpkg, "buildings_raw", dry_run)
+    height_total = maybe_count_layer(height_gpkg, "buildings_height", dry_run)
+    height_invalid = maybe_count_invalid(height_gpkg, "buildings_height", dry_run)
+    clipped_total = maybe_count_layer(clipped_gpkg, "buildings_height", dry_run)
+    clipped_invalid = maybe_count_invalid(clipped_gpkg, "buildings_height", dry_run)
+    return {
+        "source_total": source_total,
+        "source_invalid": source_invalid,
+        "height_total": height_total,
+        "height_invalid": height_invalid,
+        "hardened_total": None,
+        "hardened_invalid": None,
+        "clipped_total": clipped_total,
+        "clipped_invalid": clipped_invalid,
+        "skipped_during_hardening": None,
+        "skipped_during_clipping": derive_skip_count(height_total, clipped_total),
+        "retained_after_clip": clipped_total,
+    }
 
 
 def extract_buildings_from_gpkg(
     src_gpkg: Path,
     src_layer: str,
     height_gpkg: Path,
+    hardened_gpkg: Path,
     clipped_gpkg: Path,
     aoi_geojson: Path,
     dry_run: bool,
-) -> None:
+) -> Dict[str, Optional[int]]:
+    source_total = maybe_count_layer(src_gpkg, src_layer, dry_run)
+    source_invalid = maybe_count_invalid(src_gpkg, src_layer, dry_run)
     fields = layer_fields(src_gpkg, src_layer)
     run(
         [
@@ -210,6 +346,29 @@ def extract_buildings_from_gpkg(
         ],
         dry_run=dry_run,
     )
+    height_total = maybe_count_layer(height_gpkg, "buildings_height", dry_run)
+    height_invalid = maybe_count_invalid(height_gpkg, "buildings_height", dry_run)
+
+    run(
+        [
+            "ogr2ogr",
+            "-f",
+            "GPKG",
+            str(hardened_gpkg),
+            str(height_gpkg),
+            "-nln",
+            "buildings_height",
+            "-makevalid",
+            "-explodecollections",
+            "-nlt",
+            "PROMOTE_TO_MULTI",
+            "-skipinvalid",
+            "-skipfailures",
+        ],
+        dry_run=dry_run,
+    )
+    hardened_total = maybe_count_layer(hardened_gpkg, "buildings_height", dry_run)
+    hardened_invalid = maybe_count_invalid(hardened_gpkg, "buildings_height", dry_run)
 
     run(
         [
@@ -217,14 +376,33 @@ def extract_buildings_from_gpkg(
             "-f",
             "GPKG",
             str(clipped_gpkg),
-            str(height_gpkg),
+            str(hardened_gpkg),
             "-clipsrc",
             str(aoi_geojson),
+            "-skipinvalid",
+            "-skipfailures",
+            "-nlt",
+            "PROMOTE_TO_MULTI",
             "-nln",
             "buildings_height",
         ],
         dry_run=dry_run,
     )
+    clipped_total = maybe_count_layer(clipped_gpkg, "buildings_height", dry_run)
+    clipped_invalid = maybe_count_invalid(clipped_gpkg, "buildings_height", dry_run)
+    return {
+        "source_total": source_total,
+        "source_invalid": source_invalid,
+        "height_total": height_total,
+        "height_invalid": height_invalid,
+        "hardened_total": hardened_total,
+        "hardened_invalid": hardened_invalid,
+        "clipped_total": clipped_total,
+        "clipped_invalid": clipped_invalid,
+        "skipped_during_hardening": derive_skip_count(height_total, hardened_total),
+        "skipped_during_clipping": derive_skip_count(hardened_total, clipped_total),
+        "retained_after_clip": clipped_total,
+    }
 
 
 def main() -> int:
@@ -258,25 +436,47 @@ def main() -> int:
     raw_gpkg = processed_dir / "buildings_raw.gpkg"
     height_gpkg = processed_dir / "buildings_height.gpkg"
     clipped_gpkg = processed_dir / "buildings_height_clip.gpkg"
+    hardened_gpkg = processed_dir / "buildings_height_hardened.gpkg"
     buildings_3857 = processed_dir / "buildings_target.gpkg"
     dem_target = processed_dir / "dem_target.tif"
     building_height_raster = processed_dir / "building_height.tif"
     dsm_raster = processed_dir / "surface_dsm.tif"
     manifest_json = output_dir / "tile_manifest.json"
+    quality_report_json = processed_dir / "geometry_quality_report.json"
 
     if source_type == "osm_pbf":
         osm_pbf = Path(data_cfg["buildings_source"]["path"])
-        extract_buildings_from_osm(
+        quality_counts = extract_buildings_from_osm(
             osm_pbf, raw_gpkg, height_gpkg, clipped_gpkg, aoi_geojson, args.dry_run
         )
     elif source_type == "gpkg":
         src_gpkg = Path(data_cfg["buildings_source"]["path"])
         src_layer = data_cfg["buildings_source"]["layer"]
-        extract_buildings_from_gpkg(
-            src_gpkg, src_layer, height_gpkg, clipped_gpkg, aoi_geojson, args.dry_run
+        quality_counts = extract_buildings_from_gpkg(
+            src_gpkg,
+            src_layer,
+            height_gpkg,
+            hardened_gpkg,
+            clipped_gpkg,
+            aoi_geojson,
+            args.dry_run,
         )
     else:
         raise ValueError(f"Unsupported buildings_source.type: {source_type}")
+
+    quality_report = {
+        "source_type": source_type,
+        "dry_run": args.dry_run,
+        "paths": {
+            "source": data_cfg["buildings_source"]["path"],
+            "height": str(height_gpkg),
+            "hardened": str(hardened_gpkg) if source_type == "gpkg" else None,
+            "clipped": str(clipped_gpkg),
+        },
+        "counts": quality_counts,
+    }
+    if not args.dry_run:
+        write_json(quality_report_json, quality_report)
 
     run(
         [
@@ -293,7 +493,7 @@ def main() -> int:
         dry_run=args.dry_run,
     )
 
-    map_extent_to_target(dem_path, dem_target, target_epsg, args.dry_run)
+    map_extent_to_target(dem_path, dem_target, target_epsg, res_m, args.dry_run)
 
     if args.dry_run:
         print("Dry run complete (bounds not computed).")
@@ -313,6 +513,14 @@ def main() -> int:
             "Float32",
             "-a_nodata",
             "0",
+            "-co",
+            "TILED=YES",
+            "-co",
+            "COMPRESS=DEFLATE",
+            "-co",
+            "PREDICTOR=3",
+            "-co",
+            "BIGTIFF=IF_SAFER",
             "-te",
             str(xmin),
             str(ymin),
@@ -327,6 +535,8 @@ def main() -> int:
     calc_exec = gdal_calc_command()
     run(
         [
+            "env",
+            "PYTHONPATH=/usr/lib/python3/dist-packages",
             calc_exec,
             "-A",
             str(dem_target),
@@ -335,6 +545,10 @@ def main() -> int:
             "--calc=A+B",
             "--type=Float32",
             "--NoDataValue=0",
+            "--co=TILED=YES",
+            "--co=COMPRESS=DEFLATE",
+            "--co=PREDICTOR=3",
+            "--co=BIGTIFF=IF_SAFER",
             f"--outfile={str(dsm_raster)}",
         ],
         dry_run=False,

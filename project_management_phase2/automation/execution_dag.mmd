@@ -1,0 +1,25 @@
+graph TD
+  G6["G6 Data Pipeline Ready"] --> G7["G7 Desktop Host Boot"]
+  G7 --> G8["G8 First Watchable Demo"]
+  G8 --> G9["G9 Interaction + IPC"]
+  G9 --> G10["G10 25H2 Readiness"]
+
+  P2D1["P2-D1 Geometry Hardening"] --> G6
+  P2D2["P2-D2 Height Extraction Robustness"] --> G6
+  P2D3["P2-D3 Data QA + Stats"] --> G6
+
+  P2A1["P2-A1 Win32 App Entry"] --> G7
+  P2A2["P2-A2 Runtime Bootstrap Graph"] --> G7
+  P2A3["P2-A3 Build Target Wiring"] --> G7
+
+  P2R1["P2-R1 SceneRenderer Integration"] --> G8
+  P2R2["P2-R2 Manifest Asset Loader"] --> G8
+  P2R3["P2-R3 First Frame + Dirty Present"] --> G8
+
+  P2I1["P2-I1 Input->Camera Wiring"] --> G9
+  P2I2["P2-I2 Pipe->Control Wiring"] --> G9
+  P2I3["P2-I3 Arbitration + ACK/ERROR"] --> G9
+
+  P2V1["P2-V1 Session/Display Churn Matrix"] --> G10
+  P2V2["P2-V2 Device Lost Recovery Demo"] --> G10
+  P2V3["P2-V3 Idle/Burst Perf Gate"] --> G10
