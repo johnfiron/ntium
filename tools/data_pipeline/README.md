@@ -57,7 +57,7 @@ Fallback policy is configurable and defaults to:
 
 ```bash
 python3 tools/data_pipeline/run_pipeline.py \
-  --config tools/data_pipeline/config/pipeline_config.json
+  --config tools/data_pipeline/config/pipeline_config.example.json
 ```
 
 Outputs:
@@ -67,6 +67,59 @@ Outputs:
 - `data/processed/demo_aoi/dsm_surface.tif`
 - `data/processed/demo_aoi/qc_report.json`
 - `data/processed/demo_aoi/runtime_manifest.json`
+
+---
+
+## Maryland-first quick start (recommended on fresh install)
+
+Use this first to keep storage/network usage low and validate the full
+end-to-end pipeline before running the larger 4-state build.
+
+### 1) Download Maryland extract + boundaries
+
+```bash
+mkdir -p data/raw/osm_states data/raw/boundaries
+curl -L -o data/raw/osm_states/maryland-latest.osm.pbf https://download.geofabrik.de/north-america/us/maryland-latest.osm.pbf
+
+curl -L -o data/raw/boundaries/cb_2023_us_state_500k.zip https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_us_state_500k.zip
+unzip -o data/raw/boundaries/cb_2023_us_state_500k.zip -d data/raw/boundaries
+ogr2ogr -f GeoJSON data/raw/aoi_maryland.geojson data/raw/boundaries/cb_2023_us_state_500k.shp \
+  -dialect SQLITE \
+  -sql "SELECT geometry FROM cb_2023_us_state_500k WHERE STUSPS = 'MD'"
+```
+
+### 2) Build Maryland buildings source
+
+```bash
+ogr2ogr -f GPKG data/raw/buildings_maryland.gpkg \
+  data/raw/osm_states/maryland-latest.osm.pbf multipolygons \
+  -where "building IS NOT NULL" \
+  -nln buildings \
+  -skipfailures
+```
+
+### 3) Fetch DEM for Maryland AOI
+
+```bash
+python3 tools/data_pipeline/fetch_dem_3dep.py \
+  --aoi data/raw/aoi_maryland.geojson \
+  --out-dem data/raw/dem_maryland.tif
+```
+
+### 4) Run Maryland config
+
+```bash
+cp tools/data_pipeline/config/pipeline_config.local.example.maryland.json \
+   tools/data_pipeline/config/pipeline_config.local.json
+
+python3 tools/data_pipeline/run_pipeline.py \
+  --config tools/data_pipeline/config/pipeline_config.local.json
+```
+
+### 5) Expand to 4-state after Maryland passes
+
+After Maryland artifacts validate successfully, switch to the 4-state template
+in the next section.
 
 ---
 

@@ -1,0 +1,18 @@
+{
+  "idle": {
+    "idle_cpu_percent_total": 0.8,
+    "idle_render_present_rate_hz": 0.3,
+    "idle_pipeline_activity_per_sec": 2.1
+  },
+  "active": {
+    "active_p95_frame_ms": 12.5,
+    "active_p99_frame_ms": 21.7,
+    "ingest_queue_peak_depth": 6.0,
+    "control_loop_p95_ms": 2.8
+  },
+  "burst": {
+    "burst_input_events": 120.0,
+    "burst_throttled_events": 92.0,
+    "ingest_queue_peak_depth": 14.0
+  }
+}
