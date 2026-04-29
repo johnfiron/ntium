@@ -1,0 +1,21 @@
+{
+  "data": {
+    "aoi_geojson": "data/raw/aoi_maryland.geojson",
+    "raw_dir": "data/raw",
+    "processed_dir": "data/processed/maryland",
+    "output_dir": "data/processed/maryland/out",
+    "dem_path": "data/raw/dem_maryland.tif",
+    "buildings_source": {
+      "type": "gpkg",
+      "path": "data/raw/buildings_maryland.gpkg",
+      "layer": "buildings"
+    }
+  },
+  "processing": {
+    "target_epsg": 3857,
+    "raster_resolution_m": 10.0
+  },
+  "tiles": {
+    "tile_size_m": 2048
+  }
+}
