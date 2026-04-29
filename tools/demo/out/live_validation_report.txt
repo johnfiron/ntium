@@ -7,4 +7,4 @@ Live Validation Demo Results
 [PASS] input-router-and-arbitration :: input focus rules and ipc defer/drain arbitration behaved correctly
 ----------------------------
 Passed 5 / 5 checks
-JSON report: tools/demo/out/live_validation_report.json
+JSON report: /workspace/tools/demo/out/live_validation_report.json

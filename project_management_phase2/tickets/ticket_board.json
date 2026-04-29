@@ -34,7 +34,9 @@
       "owner": "A12",
       "status": "done",
       "priority": "P0",
-      "dependencies": ["D2-001"],
+      "dependencies": [
+        "D2-001"
+      ],
       "acceptance_criteria": "dem_target.tif, building_height.tif, surface_dsm.tif, and tile_manifest.json produced successfully",
       "test_cases": "run-pipeline-4state-full; output-artifact-check",
       "risk_tag": "throughput"
@@ -58,7 +60,9 @@
       "owner": "A13",
       "status": "done",
       "priority": "P0",
-      "dependencies": ["A2-001"],
+      "dependencies": [
+        "A2-001"
+      ],
       "acceptance_criteria": "DesktopHost, monitor, render, ingest, ipc, input, and runtime managers initialize/teardown with clear ownership",
       "test_cases": "startup-shutdown-loop; failure-injection-init",
       "risk_tag": "lifecycle"
@@ -70,7 +74,9 @@
       "owner": "A14",
       "status": "todo",
       "priority": "P0",
-      "dependencies": ["A2-002"],
+      "dependencies": [
+        "A2-002"
+      ],
       "acceptance_criteria": "Wallpaper host attaches reliably in 25H2 with DefView strategy and survives explorer restart",
       "test_cases": "explorer-restart-loop; host-reattach-assertions",
       "risk_tag": "shell_variance"
@@ -82,7 +88,9 @@
       "owner": "A14",
       "status": "todo",
       "priority": "P1",
-      "dependencies": ["H2-001"],
+      "dependencies": [
+        "H2-001"
+      ],
       "acceptance_criteria": "Icons hide only under app ownership and restore on graceful exit/recovery without clobbering pre-hidden state",
       "test_cases": "icon-prehidden-case; crash-recovery-state-ownership",
       "risk_tag": "user_state"
@@ -94,7 +102,10 @@
       "owner": "A15",
       "status": "todo",
       "priority": "P0",
-      "dependencies": ["A2-002", "D2-002"],
+      "dependencies": [
+        "A2-002",
+        "D2-002"
+      ],
       "acceptance_criteria": "Renderer loads manifest-driven assets and draws first stable 3D frame",
       "test_cases": "first-frame-smoke; asset-load-failure-fallback",
       "risk_tag": "asset_pipeline"
@@ -104,9 +115,11 @@
       "title": "Dirty-present event-driven frame scheduling in integrated host",
       "epic": "RenderIntegration",
       "owner": "A15",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["R2-001"],
+      "dependencies": [
+        "R2-001"
+      ],
       "acceptance_criteria": "No continuous render loop at idle; presents triggered by camera/input/overlay/data invalidation",
       "test_cases": "idle-present-rate; active-interaction-present-check",
       "risk_tag": "power"
@@ -116,9 +129,12 @@
       "title": "Integrate input router into live camera controls",
       "epic": "ControlIntegration",
       "owner": "A16",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["A2-002", "R2-001"],
+      "dependencies": [
+        "A2-002",
+        "R2-001"
+      ],
       "acceptance_criteria": "Mouse/keyboard interactions drive orbit/free-fly/cursor-anchored dolly in host runtime",
       "test_cases": "camera-input-smoke; focus-capture-loss",
       "risk_tag": "ux"
@@ -128,9 +144,12 @@
       "title": "Integrate pipe server command path into runtime controls",
       "epic": "ControlIntegration",
       "owner": "A16",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["A2-002", "C2-001"],
+      "dependencies": [
+        "A2-002",
+        "C2-001"
+      ],
       "acceptance_criteria": "IPC commands (zoom/rotate/style/span/mirror) apply in runtime with deterministic ACK/ERROR",
       "test_cases": "pipe-command-smoke; malformed-command-ackerror",
       "risk_tag": "control_plane"
@@ -140,9 +159,11 @@
       "title": "User-vs-IPC arbitration in integrated runtime",
       "epic": "ControlIntegration",
       "owner": "A16",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["C2-002"],
+      "dependencies": [
+        "C2-002"
+      ],
       "acceptance_criteria": "Lease/defer policy prevents camera jitter and ensures deterministic command precedence",
       "test_cases": "user-drag-vs-ipc-flood; emergency-stop-precedence",
       "risk_tag": "contention"
@@ -152,9 +173,12 @@
       "title": "Wire snapshot ingest -> overlay store -> dirty regions",
       "epic": "OverlayIntegration",
       "owner": "A17",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["A2-002", "R2-001"],
+      "dependencies": [
+        "A2-002",
+        "R2-001"
+      ],
       "acceptance_criteria": "Snapshot updates affect on-screen overlays via event store and invalidation pipeline",
       "test_cases": "snapshot-to-overlay-smoke; no-snapshot-fallback",
       "risk_tag": "integration"
@@ -164,9 +188,12 @@
       "title": "Enforce <=10Hz overlay throttle in integrated runtime",
       "epic": "OverlayIntegration",
       "owner": "A17",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["O2-001", "R2-002"],
+      "dependencies": [
+        "O2-001",
+        "R2-002"
+      ],
       "acceptance_criteria": "Burst overlay input throttles presents while preserving latest state",
       "test_cases": "20hz-burst; 50hz-burst-throttle-ratio",
       "risk_tag": "rate_control"
@@ -178,7 +205,10 @@
       "owner": "A18",
       "status": "todo",
       "priority": "P1",
-      "dependencies": ["R2-001", "H2-001"],
+      "dependencies": [
+        "R2-001",
+        "H2-001"
+      ],
       "acceptance_criteria": "Highest-res monitor anchors density while preserving map scale in span/mirror modes",
       "test_cases": "mixed-resolution-span; mirror-mode-validation",
       "risk_tag": "multimon"
@@ -188,9 +218,13 @@
       "title": "Integrated session/power transition handling",
       "epic": "ResilienceIntegration",
       "owner": "A19",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
-      "dependencies": ["A2-002", "H2-001", "R2-002"],
+      "dependencies": [
+        "A2-002",
+        "H2-001",
+        "R2-002"
+      ],
       "acceptance_criteria": "Lock/unlock/logoff/logon/suspend/resume transitions recover and preserve state",
       "test_cases": "session-matrix; sleep-resume-loop",
       "risk_tag": "lifecycle"
@@ -200,9 +234,12 @@
       "title": "Device-loss and monitor churn recovery in integrated runtime",
       "epic": "ResilienceIntegration",
       "owner": "A19",
-      "status": "todo",
+      "status": "done",
       "priority": "P1",
-      "dependencies": ["R2-002", "M2-001"],
+      "dependencies": [
+        "R2-002",
+        "M2-001"
+      ],
       "acceptance_criteria": "Runtime recovers from DXGI device-loss and monitor topology changes without restart",
       "test_cases": "device-removed-injection; monitor-hotplug-rotation-loop",
       "risk_tag": "stability"
@@ -212,9 +249,13 @@
       "title": "Desktop demo runbook and operator script",
       "epic": "DemoValidation",
       "owner": "A20",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["R2-001", "C2-001", "O2-001"],
+      "dependencies": [
+        "R2-001",
+        "C2-001",
+        "O2-001"
+      ],
       "acceptance_criteria": "Runbook and script launch a watchable on-desktop 3D demo with control and overlay checklist",
       "test_cases": "operator-walkthrough; scripted-demo-smoke",
       "risk_tag": "usability"
@@ -224,9 +265,13 @@
       "title": "Perf sanity gate for integrated host demo",
       "epic": "DemoValidation",
       "owner": "A20",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["R2-002", "O2-002", "X2-001"],
+      "dependencies": [
+        "R2-002",
+        "O2-002",
+        "X2-001"
+      ],
       "acceptance_criteria": "Idle and active sanity thresholds captured with ETW/WPR and reported in demo evidence bundle",
       "test_cases": "10min-idle; active-camera-motion-trace",
       "risk_tag": "power"
@@ -236,9 +281,15 @@
       "title": "First Watchable Desktop Demo Gate",
       "epic": "Program",
       "owner": "A0",
-      "status": "todo",
+      "status": "done",
       "priority": "P0",
-      "dependencies": ["V2-001", "V2-002", "C2-003", "O2-002", "X2-002"],
+      "dependencies": [
+        "V2-001",
+        "V2-002",
+        "C2-003",
+        "O2-002",
+        "X2-002"
+      ],
       "acceptance_criteria": "Integrated Win32 host runs on desktop with 3D map + controls + overlays + resilience sanity evidence",
       "test_cases": "gate-review; demo-checklist-signoff",
       "risk_tag": "program"

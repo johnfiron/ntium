@@ -77,7 +77,32 @@ Do not start a batch until its dependency gate is satisfied.
 7. Idle window shows no continuous redraw loop.
 8. Graceful exit restores icon state ownership.
 
-## 6) Blocking conditions
+## 6) Fast-path operator script + validation artifacts
+
+- Primary operator script:
+  - `tools/demo/run_watchable_demo.sh`
+- Demo runbook:
+  - `docs/demo/desktop_demo_runbook.md`
+- Validation checklist and evidence ledger:
+  - `docs/demo/desktop_demo_validation.md`
+- Live subsystem validation harness output:
+  - `tools/demo/out/live_validation_report.txt`
+  - `tools/demo/out/live_validation_report.json`
+
+Expected artifacts per run:
+
+- live validation transcript:
+  - `tools/demo/out/live_validation_report.txt`
+- live validation json:
+  - `tools/demo/out/live_validation_report.json`
+- perf metrics input:
+  - `tools/demo/out/perf_metrics_template.json`
+- perf gate JSON:
+  - `tools/demo/out/perf_sanity_gate_results.json`
+- orchestrator gate status:
+  - `tools/demo/out/phase2_orchestrator_status.json`
+
+## 7) Blocking conditions
 
 Release/demo is blocked if any are true:
 

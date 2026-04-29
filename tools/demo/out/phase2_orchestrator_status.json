@@ -1,0 +1,27 @@
+{
+  "completed_gates": [
+    "P2-G0-data-ready",
+    "P2-G1-app-launches",
+    "P2-G3-interactive-demo",
+    "P2-G4-watchable-demo-ready"
+  ],
+  "ready_batches": [
+    {
+      "batch_id": "batch-2-desktop-render-integration",
+      "description": "Wire desktop host + render runtime and show first watchable frame",
+      "parallel_agents": [
+        "P2-A3",
+        "P2-A4"
+      ],
+      "tickets": [
+        "H2-001",
+        "H2-002",
+        "R2-001",
+        "R2-002",
+        "M2-001"
+      ],
+      "launch_template": "implementation-agent-launch",
+      "notes": "Assign one agent per owner or epic branch. Commit/push per logical ticket."
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "overall_pass": true,
+  "checks": [
+    {
+      "scenario": "idle",
+      "metric": "idle_cpu_percent_total",
+      "actual": 0.8,
+      "operator": "<=",
+      "threshold": 1.0,
+      "pass": true
+    },
+    {
+      "scenario": "idle",
+      "metric": "idle_render_present_rate_hz",
+      "actual": 0.3,
+      "operator": "<=",
+      "threshold": 0.5,
+      "pass": true
+    },
+    {
+      "scenario": "idle",
+      "metric": "idle_pipeline_activity_per_sec",
+      "actual": 2.1,
+      "operator": "<=",
+      "threshold": 3.0,
+      "pass": true
+    },
+    {
+      "scenario": "active",
+      "metric": "active_p95_frame_ms",
+      "actual": 12.5,
+      "operator": "<=",
+      "threshold": 16.7,
+      "pass": true
+    },
+    {
+      "scenario": "active",
+      "metric": "active_p99_frame_ms",
+      "actual": 21.7,
+      "operator": "<=",
+      "threshold": 33.3,
+      "pass": true
+    },
+    {
+      "scenario": "active",
+      "metric": "ingest_queue_peak_depth",
+      "actual": 6.0,
+      "operator": "<=",
+      "threshold": 8.0,
+      "pass": true
+    },
+    {
+      "scenario": "active",
+      "metric": "control_loop_p95_ms",
+      "actual": 2.8,
+      "operator": "<=",
+      "threshold": 4.0,
+      "pass": true
+    },
+    {
+      "scenario": "burst",
+      "metric": "burst_input_events",
+      "actual": 120.0,
+      "operator": ">=",
+      "threshold": 1.0,
+      "pass": true
+    },
+    {
+      "scenario": "burst",
+      "metric": "burst_throttle_ratio",
+      "actual": 0.7666666666666667,
+      "operator": ">=",
+      "threshold": 0.6,
+      "pass": true
+    },
+    {
+      "scenario": "burst",
+      "metric": "ingest_queue_peak_depth",
+      "actual": 14.0,
+      "operator": "<=",
+      "threshold": 16.0,
+      "pass": true
+    }
+  ],
+  "failures": []
+}
